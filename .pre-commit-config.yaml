@@ -20,12 +20,12 @@ repos:
       args: [--settings, setup.cfg]
 
 - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: 23.7.0
-    hooks:
-      - id: black
-        exclude: (migrations)
-        language_version: python3.11
-        args: [--line-length=79, --skip-string-normalization]
+  rev: 23.7.0
+  hooks:
+    - id: black
+      exclude: (migrations)
+      language_version: python3.11
+      args: [--line-length=79, --skip-string-normalization]
 
 - repo: https://github.com/pycqa/flake8
   rev: 6.1.0
