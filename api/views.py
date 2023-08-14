@@ -1,3 +1,8 @@
-from django.shortcuts import render
+from api.paginators import LimitPageNumberPagination
+from djoser.views import UserViewSet as DjoserUserViewSet
+from users.models import User
 
-# Create your views here.
+
+class UserViewSet(DjoserUserViewSet):
+    queryset = User.objects.all()
+    pagination_class = LimitPageNumberPagination
