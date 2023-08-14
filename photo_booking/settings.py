@@ -147,3 +147,18 @@ MAX_EMAIL_NAME_LENGTH = 40
 MAX_LEN_NAME = 200
 MAX_TEXT_LEN = 4000
 MIN_TEXT_LEN = 50
+
+# DJOSER
+
+DJOSER = {
+    'HIDE_USERS': False,
+    'PERMISSIONS': {
+        'user': ('api.permissions.AdminOrAuthorOrReadOnly',),
+        'user_list': ('api.permissions.AdminOrAuthorOrReadOnly',),
+    },
+    'SERIALIZERS': {
+        'current_user': 'api.serializers.UserSerializer',
+        'user': 'api.serializers.UserSerializer',
+        'user_list': 'api.serializers.UserSerializer',
+    },
+}
