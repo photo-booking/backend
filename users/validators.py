@@ -1,12 +1,11 @@
 import re
-from string import punctuation, whitespace
 
 from django.conf import settings
 from rest_framework import serializers
 
 
 def regex_test(value):
-    """Проверяет на соотвествие введенных данных и возвращает True\False"""
+    """Проверяет на соотвествие введенных данных и возвращает True/False"""
     return bool(re.match('^[a-zA-Z0-9.@+-_]+$', value))
 
 

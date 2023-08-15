@@ -4,39 +4,7 @@ from django.db import models
 from phone_field import PhoneField
 
 from users.validators import CorrectUsernameAndNotMe
-
-
-class Service(models.Model):
-    name_service = models.CharField(
-        verbose_name='Название услуги',
-        max_length=settings.MAX_LEN_NAME
-    )
-    image_service = models.ImageField(
-        verbose_name='Фотография услуги',
-        upload_to='users/tags',
-        blank=True,
-    )
-    cost_service = models.PositiveIntegerField(
-        verbose_name='Стоимость услуги'
-    )
-    description_service = models.TextField(
-        verbose_name='Описание услуги',
-        max_length=settings.MAX_LEN_NAME
-    )
-    due_date = models.DateTimeField(
-        verbose_name='Срок выполнения'
-    )
-    equipment = models.CharField(
-        verbose_name='Оборудование',
-        max_length=settings.MAX_LEN_NAME
-    )
-
-    class Meta:
-        verbose_name = 'Услуга'
-        verbose_name_plural = 'Услуги'
-
-    def __str__(self):
-        return self.name_service
+from services.models import Service
 
 
 class User(AbstractUser):
@@ -60,8 +28,13 @@ class User(AbstractUser):
         blank=True
     )
     email = models.EmailField(
-        'Почта',
+        verbose_name='Почта для регистрации',
         unique=True
+    )
+    contact_email = models.EmailField(
+        verbose_name='Почта для связи',
+        blank=True,
+        null=True
     )
     phone = PhoneField(
         verbose_name='Номер телефона',
@@ -69,7 +42,7 @@ class User(AbstractUser):
         help_text='Телефон для контакта'
 
     )
-    service = models.ManyToManyField(
+    servicies = models.ManyToManyField(
         Service,
         verbose_name='Услуги',
         related_name='users',
@@ -117,7 +90,6 @@ class User(AbstractUser):
         'first_name',
         'last_name',
         'phone',
-        'city'
     )
 
     class Meta:
@@ -129,86 +101,25 @@ class User(AbstractUser):
         return self.username
 
 
-class Property(models.Model):
-    user = models.ForeignKey(
-        User,
-        verbose_name='Владелец недвижимости',
-        related_name='properties',
-        on_delete=models.CASCADE,
-        null=True
+class Media_file(models.Model):
+    link = models.URLField(
+        verbose_name='Ссылка на медиа файл'
     )
-    name = models.CharField(
-        verbose_name='Название недвижимости',
+    title = models.CharField(
+        verbose_name='Название',
         max_length=settings.MAX_LEN_NAME
     )
-    adress = models.CharField(
-        verbose_name='Адрес',
+    media_type = models.CharField(
+        verbose_name='Тип медиа файла',
         max_length=settings.MAX_LEN_NAME
     )
-    worktime = models.TextField(
-        verbose_name='Время работы'
-    )
-    area = models.FloatField(
-        verbose_name='Общая площадь помещений'
-    )
-    price = models.FloatField(
-        verbose_name='Стоимость помещений'
+    is_main_photo = models.BooleanField(
+        verbose_name='Отображение файла на главной'
     )
 
     class Meta:
-        verbose_name = 'Недвижимость'
-        verbose_name_plural = 'Недвижимость'
+        verbose_name = 'Медиа файл'
+        verbose_name_plural = 'Медиа файлы'
 
     def __str__(self):
-        return self.name
-
-
-class Room(models.Model):
-    property = models.ForeignKey(
-        Property,
-        verbose_name='Номер комнаты',
-        related_name='rooms',
-        on_delete=models.CASCADE,
-        null=True
-    )
-    name = models.CharField(
-        verbose_name='Название помещния',
-        max_length=settings.MAX_LEN_NAME
-    )
-    area = models.FloatField(
-        verbose_name='Площадь помещения'
-    )
-    price = models.FloatField(
-        verbose_name='Стоимость помещения'
-    )
-
-
-class Feedback_property(models.Model):
-    raiting = models.PositiveSmallIntegerField(
-        verbose_name='Рейтинг предприятия',
-        blank=True
-    )
-    descriptions = models.CharField(
-        verbose_name='Текст обратной связи',
-        max_length=settings.MAX_TEXT_LEN
-    )
-    user_client = models.ForeignKey(
-        User,
-        verbose_name='Клиент',
-        related_name='feedback_properties',
-        on_delete=models.CASCADE,
-        null=True
-    )
-    property = models.ForeignKey(
-        Property,
-        verbose_name='Название недвижимости',
-        related_name='feedback_properties',
-        on_delete=models.CASCADE,
-        null=True
-    )
-
-    class Meta:
-        verbose_name = 'Обратная связь'
-
-    def __str__(self):
-        return self.raiting
+        return self.title

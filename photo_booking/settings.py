@@ -46,6 +46,9 @@ INSTALLED_APPS = [
     "sorl.thumbnail",
     "users.apps.UsersConfig",
     "api.apps.ApiConfig",
+    "services.apps.ServicesConfig",
+    "properties.apps.PropertiesConfig",
+    "orders.apps.OrdersConfig",
 ]
 
 MIDDLEWARE = [
@@ -144,9 +147,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 MAX_EMAIL_NAME_LENGTH = 40
-MAX_LEN_NAME = 200
-MAX_TEXT_LEN = 4000
-MIN_TEXT_LEN = 50
+MAX_LEN_ABOUT_ME = 150
+MAX_LEN_NAME = 25
+MAX_TEXT_LEN = 500
 NO_REGISTER_USERNAME = 'me'
 
 # DJOSER
