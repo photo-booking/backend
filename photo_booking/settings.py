@@ -20,14 +20,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-63a8^!ocz7m^3r!g%xw88@f(v*2pa_!sswjfg)rm_r5andp&xc"
+SECRET_KEY = os.getenv('SECRET_KEY', default='DEFAULT_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(os.environ.get('DEBUG', False))
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["185.41.162.63", "127.0.0.1", "localhost", "photo-market.acceleratorpracticum.ru"]
 
-AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = "users.User"
 
 # Application definition
 
@@ -124,14 +124,14 @@ USE_I18N = True
 USE_TZ = True
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES':
-    ['rest_framework.authentication.TokenAuthentication', ],
+    "DEFAULT_AUTHENTICATION_CLASSES":
+    ["rest_framework.authentication.TokenAuthentication", ],
 
-    'DEFAULT_PERMISSION_CLASSES':
-    ['rest_framework.permissions.IsAuthenticatedOrReadOnly', ],
+    "DEFAULT_PERMISSION_CLASSES":
+    ["rest_framework.permissions.IsAuthenticatedOrReadOnly", ],
 
-    'DEFAULT_FILTER_BACKENDS':
-    ['django_filters.rest_framework.DjangoFilterBackend'],
+    "DEFAULT_FILTER_BACKENDS":
+    ["django_filters.rest_framework.DjangoFilterBackend"],
 }
 
 
@@ -139,7 +139,14 @@ REST_FRAMEWORK = {
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = "static/"
+
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
+# Media (photo)
+
+MEDIA_URL = "/media/"
+
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -150,19 +157,19 @@ MAX_EMAIL_NAME_LENGTH = 40
 MAX_LEN_ABOUT_ME = 150
 MAX_LEN_NAME = 25
 MAX_TEXT_LEN = 500
-NO_REGISTER_USERNAME = 'me'
+NO_REGISTER_USERNAME = "me"
 
 # DJOSER
 
 DJOSER = {
-    'HIDE_USERS': False,
-    'PERMISSIONS': {
-        'user': ('api.permissions.AdminOrAuthorOrReadOnly',),
-        'user_list': ('api.permissions.AdminOrAuthorOrReadOnly',),
+    "HIDE_USERS": False,
+    "PERMISSIONS": {
+        "user": ("api.permissions.AdminOrAuthorOrReadOnly",),
+        "user_list": ("api.permissions.AdminOrAuthorOrReadOnly",),
     },
-    'SERIALIZERS': {
-        'current_user': 'api.serializers.UserSerializer',
-        'user': 'api.serializers.UserSerializer',
-        'user_list': 'api.serializers.UserSerializer',
+    "SERIALIZERS": {
+        "current_user": "api.serializers.UserSerializer",
+        "user": "api.serializers.UserSerializer",
+        "user_list": "api.serializers.UserSerializer",
     },
 }
