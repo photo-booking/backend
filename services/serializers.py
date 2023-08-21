@@ -5,6 +5,8 @@ from services.models import CustomServiceType, PredefinedServiceType, Service
 
 
 class PredefinedServiceTypeSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели PredefinedServiceType."""
+
     name = serializers.CharField(max_length=settings.MAX_LEN_NAME)
 
     class Meta:
@@ -12,7 +14,33 @@ class PredefinedServiceTypeSerializer(serializers.ModelSerializer):
         fields = ('id', 'name')
 
 
+class CustomServiceTypeSerializer(PredefinedServiceTypeSerializer):
+    """Сериализатор для модели CustomServiceType."""
+
+    worker = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    def create(self, validated_data):
+        custom_service_type, created = CustomServiceType.objects.get_or_create(
+            **validated_data,
+        )
+        return custom_service_type
+
+    class Meta:
+        model = CustomServiceType
+        validators = (
+            serializers.UniqueTogetherValidator(
+                queryset=CustomServiceType.objects.all(),
+                fields=('name', 'worker'),
+                message='Для каждого испольнителя названия'
+                '  видов работ должны быть уникальными',
+            ),
+        )
+        fields = ('id', 'name', 'worker')
+
+
 class ServiceSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели Service."""
+
     title = serializers.CharField(required=True)
     service_image = serializers.ImageField(required=False)
     price = serializers.IntegerField(min_value=1, required=True)
@@ -23,6 +51,11 @@ class ServiceSerializer(serializers.ModelSerializer):
     service_type = PredefinedServiceTypeSerializer()
 
     def create(self, validated_data):
+        """
+        Из переданных данных создаем новый экземпляр класса Service.
+
+        В поле worker записываем текущего пользователя.
+        """
         request = self.context.get('request')
         user = request.user
         service = Service.objects.create(
@@ -39,6 +72,12 @@ class ServiceSerializer(serializers.ModelSerializer):
         return service
 
     def validate_service_type(self, service_type: PredefinedServiceType):
+        """
+        Проверяем переданный вид сервиса на наличие в БД.
+
+        Также проверяем является ли текущий пользователь автором
+        кастомного вида сервиса.
+        """
         if not PredefinedServiceType.objects.filter(**service_type).exists():
             raise serializers.ValidationError(
                 'Такого вида сервиса нет!', code=404
@@ -62,25 +101,3 @@ class ServiceSerializer(serializers.ModelSerializer):
             'duration',
             'service_type',
         )
-
-
-class CustomServiceTypeSerializer(PredefinedServiceTypeSerializer):
-    worker = serializers.HiddenField(default=serializers.CurrentUserDefault())
-
-    def create(self, validated_data):
-        custom_service_type, created = CustomServiceType.objects.get_or_create(
-            **validated_data,
-        )
-        return custom_service_type
-
-    class Meta:
-        model = CustomServiceType
-        validators = (
-            serializers.UniqueTogetherValidator(
-                queryset=CustomServiceType.objects.all(),
-                fields=('name', 'worker'),
-                message='Для каждого испольнителя названия'
-                '  видов работ должны быть уникальными',
-            ),
-        )
-        fields = ('id', 'name', 'worker')
