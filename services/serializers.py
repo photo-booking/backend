@@ -75,11 +75,10 @@ class CustomServiceTypeSerializer(PredefinedServiceTypeSerializer):
     def create(self, validated_data):
         request = self.context.get('request')
         user = request.user
-        custom_service_type = CustomServiceType(
-            name=validated_data.get('name'),
+        custom_service_type, created = CustomServiceType.objects.get_or_create(
+            **validated_data,
             worker=user,
         )
-        custom_service_type.save()
         return custom_service_type
 
     class Meta:
