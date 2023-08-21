@@ -75,4 +75,12 @@ class CustomServiceTypeSerializer(PredefinedServiceTypeSerializer):
 
     class Meta:
         model = CustomServiceType
+        validators = (
+            serializers.UniqueTogetherValidator(
+                queryset=CustomServiceType.objects.all(),
+                fields=('name', 'worker'),
+                message='Для каждого испольнителя названия'
+                '  видов работ должны быть уникальными',
+            ),
+        )
         fields = ('id', 'name', 'worker')
