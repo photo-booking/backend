@@ -1,14 +1,11 @@
 from django.conf import settings
 from rest_framework import serializers
 
-from api.serializers import UserSerializer
 from services.models import CustomServiceType, PredefinedServiceType, Service
 
 
 class PredefinedServiceTypeSerializer(serializers.ModelSerializer):
-    name = serializers.CharField(
-        max_length=settings.MAX_LEN_NAME, required=True
-    )
+    name = serializers.CharField(max_length=settings.MAX_LEN_NAME)
 
     class Meta:
         model = PredefinedServiceType
@@ -42,12 +39,10 @@ class ServiceSerializer(serializers.ModelSerializer):
         return service
 
     def validate_service_type(self, service_type: PredefinedServiceType):
-        # service_name = service_type.get('name')
-        # if not PredefinedServiceType.objects.filter(
-        #     name=service_name
-        # ).exists():
         if not PredefinedServiceType.objects.filter(**service_type).exists():
-            raise serializers.ValidationError('Такого сервиса нет!', code=404)
+            raise serializers.ValidationError(
+                'Такого вида сервиса нет!', code=404
+            )
         user = self.context.get('request').user
         custom_type = CustomServiceType.objects.filter(**service_type).first()
         if custom_type is not None and custom_type.worker != user:
@@ -70,14 +65,11 @@ class ServiceSerializer(serializers.ModelSerializer):
 
 
 class CustomServiceTypeSerializer(PredefinedServiceTypeSerializer):
-    worker = UserSerializer(read_only=True)
+    worker = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     def create(self, validated_data):
-        request = self.context.get('request')
-        user = request.user
         custom_service_type, created = CustomServiceType.objects.get_or_create(
             **validated_data,
-            worker=user,
         )
         return custom_service_type
 
