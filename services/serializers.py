@@ -32,7 +32,7 @@ class ServiceSerializer(serializers.ModelSerializer):
             description=validated_data.get('description'),
             duration=validated_data.get('duration'),
             service_type=PredefinedServiceType.objects.get(
-                **validated_data.get('service-type')
+                **validated_data.get('service_type')
             ),
             worker=user,
         )
