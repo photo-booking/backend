@@ -6,7 +6,6 @@ class PredefinedServiceType(models.Model):
     name = models.CharField(
         verbose_name='Название базовой услуги',
         max_length=settings.MAX_LEN_NAME,
-        unique=True,
     )
 
     def __str__(self) -> str:
