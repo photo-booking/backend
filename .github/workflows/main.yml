@@ -1,4 +1,4 @@
-name: Photo market workflow
+name: Photo market workflows
 
 on:
   push:
