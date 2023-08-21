@@ -21,13 +21,6 @@ services:
       - static:/backend_static
       - media:/app/media
 
-  frontend:
-    image: 4aiz/photo_market_frontend
-    env_file: .env
-    command: cp -r /app/build/. /frontend_static/
-    volumes:
-      - static:/frontend_static
-
   gateway:
     image: 4aiz/photo_market_gateway
     env_file: .env
