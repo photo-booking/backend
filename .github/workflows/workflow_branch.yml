@@ -3,7 +3,7 @@ name: Photo market workflows
 on:
   push:
     branches:
-      - workflows
+      - workflow
 
 jobs:
   tests:
