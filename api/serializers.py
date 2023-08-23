@@ -1,50 +1,70 @@
-from django.conf import settings
 from rest_framework import serializers
+
+from properties.models import Feedback_property, Property, Room
 from users.models import User
-from users.validators import CorrectUsernameAndNotMe
 
 
-class UserSerializer(serializers.ModelSerializer, CorrectUsernameAndNotMe):
-    first_name = serializers.CharField(
-        required=True,
-        max_length=settings.MAX_LEN_NAME
-    )
-    last_name = serializers.CharField(
-        required=True,
-        max_length=settings.MAX_LEN_NAME
-    )
-    username = serializers.CharField()
-    email = serializers.EmailField(
-        required=True,
-        max_length=settings.MAX_EMAIL_NAME_LENGTH
-    )
-    phone = serializers.CharField()
-    work_experience = serializers.CharField()
-    city = serializers.CharField()
-    raiting = serializers.CharField()
-    about_me = serializers.CharField()
-    is_photographer = serializers.BooleanField()
-    is_video_operator = serializers.BooleanField()
-    birthday = serializers.DateField()
-    social = serializers.CharField()
-
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
             'id',
-            'username',
             'first_name',
             'last_name',
+            'profile_photo',
             'email',
+            'contact_email',
             'phone',
             'work_experience',
             'city',
             'raiting',
             'about_me',
+            'is_client',
             'is_photographer',
             'is_video_operator',
             'birthday',
-            'social',
+            'social_telegram',
+            'social_vkontakte',
         )
-        extra_kwargs = {'password': {'write_only': True}}
-        read_only_fields = ('is_subscribed',)
+
+
+class PropertySerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = Property
+        fields = (
+            'user',
+            'name',
+            'adress',
+            'worktime',
+            'area',
+            'price',
+        )
+
+
+class RoomSerializer(serializers.ModelSerializer):
+    property = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = Room
+        fields = (
+            'property',
+            'name',
+            'area',
+            'price',
+        )
+
+
+class FBpropertySerializer(serializers.ModelSerializer):
+    property = serializers.StringRelatedField(read_only=True)
+    user_client = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = Feedback_property
+        fields = (
+            'property',
+            'raiting',
+            'descriptions',
+            'user_client',
+        )
