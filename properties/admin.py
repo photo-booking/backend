@@ -28,3 +28,4 @@ class FBpropertyAdmin(admin.ModelAdmin):
         'property',
         'user_client',
     )
+
