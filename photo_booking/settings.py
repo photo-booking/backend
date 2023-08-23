@@ -25,7 +25,12 @@ SECRET_KEY = os.getenv('SECRET_KEY', default='DEFAULT_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.environ.get('DEBUG', False))
 
-ALLOWED_HOSTS = ['185.41.162.63', '127.0.0.1', 'localhost', 'photo-market.acceleratorpracticum.ru']
+ALLOWED_HOSTS = [
+    '185.41.162.63',
+    '127.0.0.1',
+    'localhost',
+    'photo-market.acceleratorpracticum.ru',
+]
 
 AUTH_USER_MODEL = 'users.User'
 
@@ -38,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',  # Регистрация приложения channels
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
@@ -49,6 +55,7 @@ INSTALLED_APPS = [
     'services.apps.ServicesConfig',
     'properties.apps.PropertiesConfig',
     'orders.apps.OrdersConfig',
+    'chat.apps.ChatConfig',  # Регистрация приложения чат
 ]
 
 MIDDLEWARE = [
@@ -80,7 +87,18 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'photo_booking.wsgi.application'
+ASGI_APPLICATION = 'photo_booking.asgi.application'
 
+# Добавляем возможность работы со слоями для websocket соединения.
+# Дополнительно необходимо установить Redis
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -92,7 +110,7 @@ DATABASES = {
         'USER': os.environ.get('POSTGRES_USER'),
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
         'HOST': os.environ.get('DB_HOST', ''),
-        'PORT': os.environ.get('DB_PORT')
+        'PORT': os.environ.get('DB_PORT'),
     }
 }
 
@@ -128,14 +146,15 @@ USE_I18N = True
 USE_TZ = True
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES':
-    ['rest_framework.authentication.TokenAuthentication', ],
-
-    'DEFAULT_PERMISSION_CLASSES':
-    ['rest_framework.permissions.IsAuthenticatedOrReadOnly', ],
-
-    'DEFAULT_FILTER_BACKENDS':
-    ['django_filters.rest_framework.DjangoFilterBackend'],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ],
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend'
+    ],
 }
 
 
