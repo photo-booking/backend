@@ -65,7 +65,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     phone = PhoneField(
         verbose_name='Номер телефона',
-        unique=True,
         help_text='Телефон для контакта',
     )
     servicies = models.ManyToManyField(
@@ -108,6 +107,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name='Вконтакте', blank=True, null=True
     )
     is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = (
         'first_name',

@@ -70,10 +70,15 @@ class Message(models.Model):
     created_at = models.DateTimeField(
         verbose_name='Дата создания', auto_now_add=True
     )
+    chat = models.ForeignKey(
+        Chat,
+        related_name='chat_messages',
+        on_delete=models.CASCADE,
+    )
 
     class Meta:
         ordering = ('author',)
-        verbose_name = 'Сообзение'
+        verbose_name = 'Сообщение'
         verbose_name_plural = 'Сообщения'
 
     def __str__(self):
@@ -100,4 +105,4 @@ class Raiting(models.Model):
         verbose_name_plural = 'Рейтинги'
 
     def __str__(self):
-        return self.raiting
+        return str(self.raiting)
