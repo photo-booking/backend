@@ -2,7 +2,7 @@ import json
 
 # from asgiref.sync import sync_to_async
 from channels.db import database_sync_to_async
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from djangochannelsrestframework import mixins
 from djangochannelsrestframework.generics import GenericAsyncAPIConsumer
 from djangochannelsrestframework.observer import model_observer
@@ -13,6 +13,8 @@ from djangochannelsrestframework.observer.generics import (
 
 from .models import Message, Room
 from .serializers import MessageSerializer, RoomSerializer, UserSerializer
+
+User = get_user_model()
 
 
 class RoomConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):

@@ -47,23 +47,24 @@ class TokenAuthMiddleware(BaseMiddleware):
     async def __call__(self, scope, receive, send):
         close_old_connections()
         # token_key = scope['query_string'].decode().split('=')[-1]
-        try:
-            token_key = (
-                dict(
-                    (
-                        x.split('=')
-                        for x in scope['query_string'].decode().split("&")
-                    )
-                )
-            ).get('token', None)
-        except ValueError:
-            token_key = None
         # try:
-        #     token_key = dict(scope['headers'])
-        # [b'sec-websocket-protocol'].decode('utf-8')
-        #     print('d1', token_key)
+        #     token_key = (
+        #         dict(
+        #             (
+        #                 x.split('=')
+        #                 for x in scope['query_string'].decode().split("&")
+        #             )
+        #         )
+        #     ).get('token', None)
         # except ValueError:
         #     token_key = None
+        try:
+            token_key = dict(scope['headers'])[
+                b'sec-websocket-protocol'
+            ].decode('utf-8')
+            print('d1', token_key)
+        except ValueError:
+            token_key = None
 
         scope['user'] = await get_user(token_key)
         print('d2', scope['user'])
