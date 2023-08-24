@@ -44,6 +44,10 @@ class Room(models.Model):
     area = models.FloatField(verbose_name='Площадь помещения')
     price = models.FloatField(verbose_name='Стоимость помещения')
 
+    class Meta:
+        verbose_name = 'Комната в недвижимости'
+        verbose_name_plural = 'Комнаты в недвижимости'
+
 
 class Feedback_property(models.Model):
     raiting = models.PositiveSmallIntegerField(
@@ -69,6 +73,7 @@ class Feedback_property(models.Model):
 
     class Meta:
         verbose_name = 'Обратная связь'
+        verbose_name_plural = 'Обратные связи'
 
     def __str__(self):
         return str(self.raiting)
