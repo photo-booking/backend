@@ -23,6 +23,7 @@ class UserAdmin(admin.ModelAdmin):
         'birthday',
         'social_telegram',
         'social_vkontakte',
+        'is_active',
     )
     search_fields = (
         'phone',
