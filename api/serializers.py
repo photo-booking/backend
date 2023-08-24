@@ -132,6 +132,7 @@ class MessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
         fields = (
+            'chat',
             'author',
             'text',
             'created_at',

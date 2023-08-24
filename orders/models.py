@@ -70,6 +70,11 @@ class Message(models.Model):
     created_at = models.DateTimeField(
         verbose_name='Дата создания', auto_now_add=True
     )
+    chat = models.ForeignKey(
+        Chat,
+        related_name='messages',
+        on_delete=models.CASCADE,
+    )
 
     class Meta:
         ordering = ('author',)
