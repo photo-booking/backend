@@ -31,6 +31,13 @@ DEBUG = bool(os.environ.get('DEBUG', False))
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', default='def').split(',')
 
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost',
+    'http://127.0.0.1',
+    'https://photo-market.acceleratorpracticum.ru',
+    'http://photo-market.acceleratorpracticum.ru',
+]
+
 AUTH_USER_MODEL = 'users.User'
 
 # Application definition
