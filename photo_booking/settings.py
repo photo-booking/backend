@@ -32,13 +32,10 @@ DEBUG = bool(os.environ.get('DEBUG', False))
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', default='def').split(',')
 
 
-if DEBUG:
-    CSRF_TRUSTED_ORIGINS = ['http://*', 'https://*']
-else:
-    CSRF_TRUSTED_ORIGINS = [
-        'https://photo-market.acceleratorpracticum.ru',
-        'http://photo-market.acceleratorpracticum.ru',
-    ]
+CSRF_TRUSTED_ORIGINS = [
+    'https://photo-market.acceleratorpracticum.ru',
+    'http://photo-market.acceleratorpracticum.ru',
+]
 
 AUTH_USER_MODEL = 'users.User'
 
