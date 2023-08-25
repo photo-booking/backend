@@ -32,7 +32,12 @@ ALLOWED_HOSTS = [
     'photo-market.acceleratorpracticum.ru',
 ]
 
-CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1']
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost',
+    'http://127.0.0.1',
+    'https://photo-market.acceleratorpracticum.ru',
+    'http://photo-market.acceleratorpracticum.ru',
+]
 
 AUTH_USER_MODEL = 'users.User'
 
