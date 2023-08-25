@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,7 +29,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', default='DEFAULT_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.environ.get('DEBUG', False))
 
-ALLOWED_HOSTS = ['185.41.162.63', '127.0.0.1', 'localhost', 'photo-market.acceleratorpracticum.ru']
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', default='def').split(',')
 
 AUTH_USER_MODEL = 'users.User'
 
