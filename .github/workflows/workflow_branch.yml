@@ -26,7 +26,7 @@ jobs:
         python-version: "3.9"
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip 
+        python -m pip install --upgrade pip
         pip install flake8==6.0.0
         pip install -r requirements.txt
     - name: Test with flake8 and django tests
@@ -122,8 +122,8 @@ jobs:
           echo DB_PORT=${{ secrets.DB_PORT }} >> .env
           echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
           echo DEBUG= >> .env
-          sudo docker pull --disable-content-trust ${{ secrets.DOCKER_USERNAME }}/photo_market_backend:latest      
+          sudo docker pull --disable-content-trust ${{ secrets.DOCKER_USERNAME }}/photo_market_backend:latest
           sudo docker-compose up -d
-          sudo docker-compose exec -T web python manage.py migrate
-          sudo docker-compose exec -T web python manage.py collectstatic --no-input
+          sudo docker-compose exec -T backend python manage.py migrate
+          sudo docker-compose exec -T backend python manage.py collectstatic --no-input
           sudo docker compose exec backend cp -r /app/static/. /backend_static/static/
