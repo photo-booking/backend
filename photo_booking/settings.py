@@ -25,7 +25,14 @@ SECRET_KEY = os.getenv('SECRET_KEY', default='DEFAULT_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.environ.get('DEBUG', False))
 
-ALLOWED_HOSTS = ['185.41.162.63', '127.0.0.1', 'localhost', 'photo-market.acceleratorpracticum.ru']
+ALLOWED_HOSTS = [
+    '185.41.162.63',
+    '127.0.0.1',
+    'localhost',
+    'photo-market.acceleratorpracticum.ru',
+]
+
+CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1']
 
 AUTH_USER_MODEL = 'users.User'
 
@@ -92,7 +99,7 @@ DATABASES = {
         'USER': os.environ.get('POSTGRES_USER'),
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
         'HOST': os.environ.get('DB_HOST', ''),
-        'PORT': os.environ.get('DB_PORT')
+        'PORT': os.environ.get('DB_PORT'),
     }
 }
 
@@ -128,14 +135,15 @@ USE_I18N = True
 USE_TZ = True
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES':
-    ['rest_framework.authentication.TokenAuthentication', ],
-
-    'DEFAULT_PERMISSION_CLASSES':
-    ['rest_framework.permissions.IsAuthenticatedOrReadOnly', ],
-
-    'DEFAULT_FILTER_BACKENDS':
-    ['django_filters.rest_framework.DjangoFilterBackend'],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ],
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend'
+    ],
 }
 
 
