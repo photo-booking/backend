@@ -1,0 +1,19 @@
+name: Deploy on Pull Request closed
+
+on:
+  pull_request:
+    branches:
+      - develop
+    types: [closed]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v2.1.1
+        with:
+          token: ${{ secrets.DISPATCH_HOOK_TOKEN }}
+          repository: photo_booking/photo_booking_full
+          event-type: pull_request_closed
