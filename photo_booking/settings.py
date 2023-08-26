@@ -36,7 +36,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
     'photo-market.acceleratorpracticum.ru',
-    'backend:8000',
+    'backend',
 ]
 
 AUTH_USER_MODEL = 'users.User'
