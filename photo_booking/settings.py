@@ -24,12 +24,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = (
-    "django-insecure-63a8^!ocz7m^3r!g%xw88@f(v*2pa_!sswjfg)rm_r5andp&xc"
-)
+
+SECRET_KEY = os.getenv('SECRET_KEY', default='DEFAULT_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(os.environ.get('DEBUG', False))
 
 ALLOWED_HOSTS = [
     '185.41.162.63',
@@ -37,6 +36,12 @@ ALLOWED_HOSTS = [
     'localhost',
     'photo-market.acceleratorpracticum.ru',
     'backend',
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://photo-market.acceleratorpracticum.ru',
+    'http://photo-market.acceleratorpracticum.ru',
+    'http://185.41.162.63',
 ]
 
 AUTH_USER_MODEL = 'users.User'
