@@ -1,8 +1,8 @@
 from django.conf import settings
 from django.db import models
 
-from users.models import User
 from services.models import Service
+from users.models import User
 
 
 class Chat(models.Model):

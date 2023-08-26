@@ -1,5 +1,6 @@
-from api.paginators import LimitPageNumberPagination
 from djoser.views import UserViewSet as DjoserUserViewSet
+
+from api.paginators import LimitPageNumberPagination
 from users.models import User
 
 

@@ -3,8 +3,8 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from phone_field import PhoneField
 
-from users.validators import CorrectUsernameAndNotMe
 from services.models import Service
+from users.validators import CorrectUsernameAndNotMe
 
 
 class User(AbstractUser):
@@ -101,7 +101,7 @@ class User(AbstractUser):
         return self.username
 
 
-class Media_file(models.Model):
+class MediaFile(models.Model):
     link = models.URLField(
         verbose_name='Ссылка на медиа файл'
     )

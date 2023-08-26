@@ -58,7 +58,7 @@ class Room(models.Model):
     )
 
 
-class Feedback_property(models.Model):
+class FeedbackProperty(models.Model):
     raiting = models.PositiveSmallIntegerField(
         verbose_name='Рейтинг предприятия',
         blank=True
