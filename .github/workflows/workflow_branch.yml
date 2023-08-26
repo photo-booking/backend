@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:13.10
+        image: postgres:13.10-alpine
         env:
           POSTGRES_USER: market_user
           POSTGRES_PASSWORD: market_password
@@ -96,7 +96,7 @@ jobs:
         username: ${{ secrets.USER }}
         key: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.SSH_PASSPHRASE }}
-        source: "docker-compose.production.yml"
+        source: "docker-compose.yml"
         target: "photo_market"
     - name: Executing remote ssh commands to deploy
       uses: appleboy/ssh-action@master
@@ -108,8 +108,8 @@ jobs:
         script: |
           cd photo_market
           sudo docker image prune -f
-          sudo docker compose -f docker-compose.production.yml pull
-          sudo docker compose -f docker-compose.production.yml down
+          sudo docker compose pull
+          sudo docker compose down
           touch .env
           echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
           echo POSTGRES_DB=${{ secrets.POSTGRES_DB }} >> .env
@@ -120,6 +120,6 @@ jobs:
           echo DB_PORT=${{ secrets.DB_PORT }} >> .env
           echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
           echo ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }} >> .env
-          sudo docker compose -f docker-compose.production.yml up -d
-          sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate
-          sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic --no-input
+          sudo docker compose up -d
+          sudo docker compose exec backend python manage.py migrate
+          sudo docker compose exec backend python manage.py collectstatic --no-input
