@@ -1,9 +1,10 @@
 name: Photo market workflows
 
 on:
-  push:
+  pull_request:
     branches:
-      - feature/chat_ws
+      - develop
+    types: [closed]
 
 jobs:
   tests:
