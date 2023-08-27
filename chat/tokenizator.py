@@ -1,7 +1,7 @@
 # import sys
 # import os
 # sys.path.append(os.path.abspath("/websockets_dcrf_example/config"))
-# sys.path.append(os.path.abspath("\config\settings.py"))
+#  sys.path.append(os.path.abspath("\config\settings.py"))
 
 from datetime import datetime, timedelta
 
