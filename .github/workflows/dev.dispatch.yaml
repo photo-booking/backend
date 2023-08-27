@@ -1,4 +1,4 @@
-name: Deploy on Pull Request closed
+name: Dispatch for Deploy on Pull Request closed
 
 on:
   pull_request:
