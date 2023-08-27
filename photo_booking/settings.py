@@ -24,37 +24,50 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = (
-    "django-insecure-63a8^!ocz7m^3r!g%xw88@f(v*2pa_!sswjfg)rm_r5andp&xc"
-)
+
+SECRET_KEY = os.getenv('SECRET_KEY', default='DEFAULT_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(os.environ.get('DEBUG', False))
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '185.41.162.63',
+    '127.0.0.1',
+    'localhost',
+    'photo-market.acceleratorpracticum.ru',
+    'backend',
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://photo-market.acceleratorpracticum.ru',
+    'http://photo-market.acceleratorpracticum.ru',
+    'http://185.41.162.63',
+]
 
 AUTH_USER_MODEL = 'users.User'
 
 # Application definition
 
 INSTALLED_APPS = [
-    "django.contrib.admin",
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.sessions",
-    "django.contrib.messages",
-    "django.contrib.staticfiles",
-    "rest_framework",
-    "rest_framework.authtoken",
-    "django_filters",
-    "djoser",
-    "phone_field",
-    "sorl.thumbnail",
-    "users.apps.UsersConfig",
-    "api.apps.ApiConfig",
-    "services.apps.ServicesConfig",
-    "properties.apps.PropertiesConfig",
-    "orders.apps.OrdersConfig",
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'channels',  # Регистрация приложения channels
+    'rest_framework',
+    'rest_framework.authtoken',
+    'django_filters',
+    'djoser',
+    'phone_field',
+    'sorl.thumbnail',
+    'users.apps.UsersConfig',
+    'api.apps.ApiConfig',
+    'services.apps.ServicesConfig',
+    'properties.apps.PropertiesConfig',
+    'orders.apps.OrdersConfig',
+    'chat.apps.ChatConfig',  # Регистрация приложения чат
 ]
 
 MIDDLEWARE = [
@@ -85,16 +98,31 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "photo_booking.wsgi.application"
+WSGI_APPLICATION = 'photo_booking.wsgi.application'
+ASGI_APPLICATION = 'photo_booking.asgi.application'
 
+# Добавляем возможность работы со слоями для websocket соединения.
+# Дополнительно необходимо установить Redis
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': os.environ.get('DB_ENGINE'),
+        'NAME': os.environ.get('POSTGRES_DB'),
+        'USER': os.environ.get('POSTGRES_USER'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST'),
+        'PORT': os.environ.get('DB_PORT'),
     }
 }
 
@@ -154,8 +182,11 @@ REST_FRAMEWORK = {
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

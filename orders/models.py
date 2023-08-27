@@ -63,7 +63,7 @@ class Message(models.Model):
     author = models.ForeignKey(
         User,
         verbose_name='Участник чата',
-        related_name='messages',
+        related_name='order_messages',
         on_delete=models.CASCADE,
     )
     text = models.TextField(verbose_name='Текст сообщения')
@@ -72,7 +72,7 @@ class Message(models.Model):
     )
     chat = models.ForeignKey(
         Chat,
-        related_name='messages',
+        related_name='chat_messages',
         on_delete=models.CASCADE,
     )
 
