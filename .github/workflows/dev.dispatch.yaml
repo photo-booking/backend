@@ -12,18 +12,21 @@ on:
       - feature/multirepo_deploy
 
 
-jobs:
-  deploy:
-    uses:
-      photo_booking/photo_booking_full/.github/workflows/dev.deploy.yaml@main
 # jobs:
-#   build:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@v2
-#       - name: Repository Dispatch
-#         uses: peter-evans/repository-dispatch@v2.1.1
-#         with:
-#           token: ${{ secrets.DISPATCH_HOOK_TOKEN }}
-#           repository: photo_booking/photo_booking_full
-#           event-type: pull_request_closed_dev
+#   deploy:
+#     uses:
+#       # photo_booking/photo_booking_full/.github/workflows/dev.deploy.yaml@main
+#       #photo-booking/photo_booking_full/blob/main/.github/workflows/dev.deploy.yaml@main
+#       photo-booking/photo_booking_full/.github/workflows/dev.deploy.yaml@main
+#     secrets: inherit
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v2.1.1
+        with:
+          token: ${{ secrets.DISPATCH_HOOK_TOKEN }}
+          repository: photo-booking/photo_booking_full
+          event-type: pull_request_closed_dev
