@@ -11,14 +11,6 @@ on:
     branches:
       - feature/multirepo_deploy
 
-
-# jobs:
-#   deploy:
-#     uses:
-#       # photo_booking/photo_booking_full/.github/workflows/dev.deploy.yaml@main
-#       #photo-booking/photo_booking_full/blob/main/.github/workflows/dev.deploy.yaml@main
-#       photo-booking/photo_booking_full/.github/workflows/dev.deploy.yaml@main
-#     secrets: inherit
 jobs:
   send_dispatch:
     runs-on: ubuntu-latest
