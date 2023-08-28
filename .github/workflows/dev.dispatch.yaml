@@ -29,4 +29,4 @@ jobs:
         with:
           token: ${{ secrets.DISPATCH_HOOK_TOKEN }}
           repository: photo-booking/photo_booking_full
-          event-type: pull_request_closed_dev
+          event-type: pull_request_closed_develop
