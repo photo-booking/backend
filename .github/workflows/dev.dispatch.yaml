@@ -1,10 +1,15 @@
 name: Dispatch for Deploy on Pull Request closed
 
+# on:
+#   pull_request:
+#     branches:
+#       - develop
+#     types: [closed]
+
 on:
-  pull_request:
+  push:
     branches:
-      - develop
-    types: [closed]
+      - feature/multirepo_deploy
 
 jobs:
   build:
@@ -16,4 +21,4 @@ jobs:
         with:
           token: ${{ secrets.DISPATCH_HOOK_TOKEN }}
           repository: photo_booking/photo_booking_full
-          event-type: pull_request_closed
+          event-type: pull_request_closed_dev
