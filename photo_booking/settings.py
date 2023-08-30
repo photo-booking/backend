@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'drf_yasg',  # Регистрация приложения для создания динамической документации
     'channels',  # Регистрация приложения channels
     'rest_framework',
     'rest_framework.authtoken',
@@ -132,23 +133,28 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation\
-        .UserAttributeSimilarityValidator",
+        'NAME': 'django.contrib.auth.password_validation.'
+        'UserAttributeSimilarityValidator',
     },
     {
-        "NAME": "django.contrib.auth.password_validation\
-        .MinimumLengthValidator",
+        'NAME': 'django.contrib.auth.password_validation.'
+        'MinimumLengthValidator',
     },
     {
-        "NAME": "django.contrib.auth.password_validation.\
-        CommonPasswordValidator",
+        'NAME': 'django.contrib.auth.password_validation.'
+        'CommonPasswordValidator',
     },
     {
-        "NAME": "django.contrib.auth.password_validation.\
-        NumericPasswordValidator",
+        'NAME': 'django.contrib.auth.password_validation.'
+        'NumericPasswordValidator',
     },
 ]
 
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {'type': 'apiKey', 'name': 'Authorization', 'in': 'header'}
+    }
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
@@ -203,7 +209,8 @@ NO_REGISTER_USERNAME = 'me'
 
 DJOSER = {
     'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
-    'SEND_ACTIVATION_EMAIL': True,
+    'ACTIVATION_URL': '#/activate/{uid}/{token}',
+    'SEND_ACTIVATION_EMAIL': False,  # Надо настроить рассылку email сначала
     'HIDE_USERS': False,
     'PERMISSIONS': {
         'user': ('api.permissions.AdminOrAuthorOrReadOnly',),
