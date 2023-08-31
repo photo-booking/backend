@@ -235,9 +235,13 @@ LOGIN_REDIRECT_URL = '/api/users/'
 
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',
+    'social_core.backends.vk.VKOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
 
 # Vkontakte
-VK_APP_ID = os.getenv('VK_APP_ID')
-VK_APP_SECRET = os.getenv('VK_API_SECRET')
+SOCIAL_AUTH_VK_OAUTH2_KEY = os.getenv('VK_APP_ID')
+SOCIAL_AUTH_VK_OAUTH2_SECRET = os.getenv('VK_API_SECRET')
+SOCIAL_AUTH_VK_OAUTH2_SCOPE = [
+    'email',
+]
