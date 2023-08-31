@@ -1,0 +1,43 @@
+name: Send submodule updates to parent repo
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+
+env:
+  PARENT_REPO_NAME: photo-booking/photo-booking_full
+  PARENT_REPO_BRANCH: main
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout ${{ github.event.repository.name }}
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.DISPATCH_HOOK_TOKEN }}
+      - name: Checkout ${{ env.PARENT_REPO_NAME }}
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ env.PARENT_REPO_NAME }}
+          submodules: true
+          ref: ${{ env.PARENT_REPO_BRANCH }}
+          token: ${{ secrets.DISPATCH_HOOK_TOKEN }}
+          fetch-depth: 0
+      - name: Get submodule updates
+        run: |
+          cd ${{ github.event.repository.name }}
+          git fetch --all
+          git switch ${{ github.ref_name }}
+      - name: Commit and push the changes to ${{ env.PARENT_REPO_NAME }}
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Auto-update
