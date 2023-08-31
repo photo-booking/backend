@@ -7,8 +7,6 @@ from django.contrib.auth.models import (
 from django.db import models
 from phone_field import PhoneField
 
-from services.models import Service
-
 
 class AccountManager(BaseUserManager):
     def create_user(self, email, first_name, last_name, password, is_client):
@@ -66,11 +64,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     phone = PhoneField(
         verbose_name='Номер телефона',
         help_text='Телефон для контакта',
-    )
-    servicies = models.ManyToManyField(
-        Service,
-        verbose_name='Услуги',
-        related_name='users',
     )
     work_experience = models.FloatField(
         verbose_name='Опыт работы',
@@ -132,7 +125,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.email
 
 
-class Media_file(models.Model):
+class MediaFile(models.Model):
     link = models.URLField(verbose_name='Ссылка на медиа файл')
     title = models.CharField(
         verbose_name='Название', max_length=settings.MAX_LEN_NAME

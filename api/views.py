@@ -3,9 +3,9 @@ from rest_framework import viewsets
 
 from api.paginators import LimitPageNumberPagination
 from orders.models import Chat, Message, Order, Raiting
-from properties.models import Feedback_property, Property, Room
+from properties.models import FeedbackProperty, Property, Room
 from services.models import Service
-from users.models import Media_file, User
+from users.models import MediaFile, User
 
 from .serializers import (
     ChatSerializer,
@@ -26,7 +26,7 @@ class UserViewSet(DjoserUserViewSet):
 
 
 class MediafileViewSet(viewsets.ModelViewSet):
-    queryset = Media_file.objects.all()
+    queryset = MediaFile.objects.all()
     serializer_class = MediafileSerializer
 
 
@@ -41,7 +41,7 @@ class RoomViewSet(viewsets.ModelViewSet):
 
 
 class FBpropertyViewSet(viewsets.ModelViewSet):
-    queryset = Feedback_property.objects.all()
+    queryset = FeedbackProperty.objects.all()
     serializer_class = FBpropertySerializer
 
 

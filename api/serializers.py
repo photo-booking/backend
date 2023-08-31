@@ -1,9 +1,9 @@
 from rest_framework import serializers
 
 from orders.models import Chat, Message, Order, Raiting
-from properties.models import Feedback_property, Property, Room
+from properties.models import FeedbackProperty, Property, Room
 from services.models import Service
-from users.models import Media_file, User
+from users.models import MediaFile, User
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -63,7 +63,7 @@ class FBpropertySerializer(serializers.ModelSerializer):
     user_client = serializers.StringRelatedField(read_only=True)
 
     class Meta:
-        model = Feedback_property
+        model = FeedbackProperty
         fields = (
             'property',
             'raiting',
@@ -74,7 +74,7 @@ class FBpropertySerializer(serializers.ModelSerializer):
 
 class MediafileSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Media_file
+        model = MediaFile
         fields = (
             'link',
             'title',

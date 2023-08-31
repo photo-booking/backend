@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from properties.models import Feedback_property, Property, Room
+from properties.models import FeedbackProperty, Property, Room
 
 
 @admin.register(Property)
@@ -44,7 +44,7 @@ class RoomAdmin(admin.ModelAdmin):
     )
 
 
-@admin.register(Feedback_property)
+@admin.register(FeedbackProperty)
 class FBpropertyAdmin(admin.ModelAdmin):
     list_display = ('property', 'raiting', 'descriptions', 'user_client')
     search_fields = (

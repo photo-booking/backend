@@ -1,8 +1,29 @@
 from django.conf import settings
 from django.db import models
 
+from users.models import User
+
+
+class Tag(models.Model):
+    name = models.CharField(max_length=settings.MAX_LEN_NAME, db_index=True,
+                            verbose_name='имя',
+                            unique=True)
+    slug = models.SlugField('Индификатор', unique=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['name']
+
 
 class Service(models.Model):
+    author = models.ForeignKey(
+        User,
+        verbose_name='Автор',
+        on_delete=models.CASCADE,
+        related_name='services'
+    )
     name_service = models.CharField(
         verbose_name='Название услуги',
         max_length=settings.MAX_LEN_NAME
@@ -25,6 +46,12 @@ class Service(models.Model):
     equipment = models.CharField(
         verbose_name='Оборудование',
         max_length=settings.MAX_LEN_NAME
+    )
+    tag = models.ManyToManyField(
+        Tag,
+        verbose_name='Вид съемки',
+        blank=True,
+        related_name='services'
     )
 
     class Meta:
