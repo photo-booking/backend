@@ -1,4 +1,5 @@
 from djoser.views import UserViewSet as DjoserUserViewSet
+from django.shortcuts import render
 from rest_framework import viewsets
 
 from api.paginators import LimitPageNumberPagination
@@ -18,6 +19,14 @@ from .serializers import (
     RoomSerializer,
     ServiceSerializer,
 )
+
+
+def index(request):
+    context = {
+        'users': User.objects.order_by('email')
+        if request.user.is_authenticated else []
+    }
+    return render(request, 'index.html', context)
 
 
 class UserViewSet(DjoserUserViewSet):
