@@ -11,7 +11,8 @@ from services.models import Service
 
 
 class AccountManager(BaseUserManager):
-    def create_user(self, email, first_name, last_name, password, is_client):
+    def create_user(self, email, first_name='default', last_name='defaul',
+                    password=None, is_client=True):
         user = self.model(
             email=email,
             first_name=first_name,
