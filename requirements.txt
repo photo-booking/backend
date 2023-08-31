@@ -70,3 +70,4 @@ txaio==21.2.1
 typing-extensions==4.0.0
 wsproto==1.0.0
 zope.interface==5.4.0
+# hiredis==2.0.0
