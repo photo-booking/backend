@@ -206,10 +206,8 @@ NO_REGISTER_USERNAME = 'me'
 # DJOSER
 
 DJOSER = {
-    'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
-    'ACTIVATION_URL': '#/activate/{uid}/{token}',
-    'SEND_ACTIVATION_EMAIL': False,  # Надо настроить рассылку email сначала
-    'PASSWORD_CHANGED_EMAIL_CONFIRMATION': False,  # Надо настроить
+    'PASSWORD_RESET_CONFIRM_URL': 'api/users/reset_password_confirm/{uid}/{token}',
+    'PASSWORD_CHANGED_EMAIL_CONFIRMATION': True,
     'HIDE_USERS': False,
     'PERMISSIONS': {
         'user': ('api.permissions.AdminOrAuthorOrReadOnly',),
@@ -245,3 +243,14 @@ SOCIAL_AUTH_VK_OAUTH2_SECRET = os.getenv('VK_API_SECRET')
 SOCIAL_AUTH_VK_OAUTH2_SCOPE = [
     'email',
 ]
+
+# Отпарвка писем для восстановления пароля smtp
+# EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+# EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
+
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = 587
