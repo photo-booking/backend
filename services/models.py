@@ -1,8 +1,6 @@
 from django.conf import settings
 from django.db import models
 
-from users.models import User
-
 
 class Tag(models.Model):
     name = models.CharField(max_length=settings.MAX_LEN_NAME, db_index=True,
@@ -19,7 +17,7 @@ class Tag(models.Model):
 
 class Service(models.Model):
     author = models.ForeignKey(
-        User,
+        'users.User',
         verbose_name='Автор',
         on_delete=models.CASCADE,
         related_name='services'
@@ -83,5 +81,8 @@ class MediaFile(models.Model):
 
 
 class Portfolio(models.Model):
-    author = models.ForeignKey('users.User', on_delete=models.CASCADE, blank=False)
+    author = models.ForeignKey('users.User',
+                               on_delete=models.CASCADE,
+                               blank=False,
+                               related_name='portfolio')
     media_file = models.ForeignKey(MediaFile, on_delete=models.CASCADE)
