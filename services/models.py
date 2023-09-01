@@ -33,3 +33,28 @@ class Service(models.Model):
 
     def __str__(self):
         return self.name_service
+
+
+class MediaFile(models.Model):
+    link = models.URLField(verbose_name='Ссылка на медиа файл')
+    title = models.CharField(
+        verbose_name='Название', max_length=settings.MAX_LEN_NAME
+    )
+    media_type = models.CharField(
+        verbose_name='Тип медиа файла', max_length=settings.MAX_LEN_NAME
+    )
+    is_main_photo = models.BooleanField(
+        verbose_name='Отображение файла на главной'
+    )
+
+    class Meta:
+        verbose_name = 'Медиа файл'
+        verbose_name_plural = 'Медиа файлы'
+
+    def __str__(self):
+        return self.title
+
+
+class Portfolio(models.Model):
+    author = models.ForeignKey('users.User', on_delete=models.CASCADE, blank=False)
+    media_file = models.ForeignKey(MediaFile, on_delete=models.CASCADE)
