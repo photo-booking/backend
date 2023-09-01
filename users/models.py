@@ -7,8 +7,6 @@ from django.contrib.auth.models import (
 from django.db import models
 from phone_field import PhoneField
 
-from services.models import Service
-
 
 class AccountManager(BaseUserManager):
     def create_user(self, email, first_name='default', last_name='defaul',
@@ -67,11 +65,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     phone = PhoneField(
         verbose_name='Номер телефона',
         help_text='Телефон для контакта',
-    )
-    servicies = models.ManyToManyField(
-        Service,
-        verbose_name='Услуги',
-        related_name='users',
     )
     work_experience = models.FloatField(
         verbose_name='Опыт работы',
