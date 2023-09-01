@@ -1,13 +1,14 @@
-from djoser.views import UserViewSet as DjoserUserViewSet
 from django.shortcuts import render
-from rest_framework import viewsets
+from django_filters.rest_framework import DjangoFilterBackend
+from djoser.views import UserViewSet as DjoserUserViewSet
+from rest_framework import viewsets, filters
 
-from api.paginators import LimitPageNumberPagination
+from api.paginators import LimitPageNumberPagination, CatalogPagination
 from orders.models import Chat, Message, Order, Raiting
 from properties.models import FeedbackProperty, Property, Room
+from services.filters import CatalogFilter
 from services.models import Service, MediaFile
 from users.models import User
-
 from .serializers import (
     ChatSerializer,
     FBpropertySerializer,
@@ -17,7 +18,7 @@ from .serializers import (
     PropertySerializer,
     RaitingSerializer,
     RoomSerializer,
-    ServiceSerializer,
+    ServiceSerializer, GeneralCatalogExecutorCardSerializer,
 )
 
 
@@ -57,6 +58,16 @@ class FBpropertyViewSet(viewsets.ModelViewSet):
 class ServiceViewSet(viewsets.ModelViewSet):
     queryset = Service.objects.all()
     serializer_class = ServiceSerializer
+
+
+class GeneralCatalogExecutorCardViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = GeneralCatalogExecutorCardSerializer
+    pagination_class = CatalogPagination
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter, ]
+    filterset_class = CatalogFilter
+    ordering_fields = ['services__cost_service']
+    http_method_names = ['GET', ]
 
 
 class ChatViewSet(viewsets.ModelViewSet):
