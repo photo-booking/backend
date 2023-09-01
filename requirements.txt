@@ -20,15 +20,15 @@ Django==4.2.4
 django-filter==23.2
 django-phone-field==1.8.1
 django-templated-mail==1.1.1
-djangochannelsrestframework==0.3.0
+djangochannelsrestframework==1.1.0
 djangorestframework==3.14.0
 djangorestframework-simplejwt==5.2.2
 djoser==2.2.0
+drf-yasg==1.21.7
 filelock==3.12.2
 identify==2.5.26
 h11==0.12.0
 h2==4.1.0
-hiredis==2.0.0
 hpack==4.0.0
 hypercorn==0.12.0
 hyperframe==6.0.1
@@ -70,3 +70,4 @@ txaio==21.2.1
 typing-extensions==4.0.0
 wsproto==1.0.0
 zope.interface==5.4.0
+# hiredis==2.0.0

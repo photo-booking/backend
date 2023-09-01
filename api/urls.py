@@ -12,6 +12,7 @@ from .views import (
     RoomViewSet,
     ServiceViewSet,
     UserViewSet,
+    index
 )
 
 app_name = 'api'
@@ -31,4 +32,6 @@ router_v1.register('raitings', RaitingViewSet, 'raitings')
 urlpatterns = (
     path('', include(router_v1.urls)),
     path('auth/', include('djoser.urls.authtoken')),
+    path('social/', include('social_django.urls', namespace="social")),
+    path('main/', index),
 )
