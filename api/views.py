@@ -3,7 +3,7 @@ from rest_framework import viewsets
 
 from api.paginators import LimitPageNumberPagination
 from orders.models import Chat, Message, Order, Raiting
-from properties.models import Feedback_property, Property, Room
+from properties.models import FeedbackProperty, Property, Room
 from services.models import Service, MediaFile
 from users.models import User
 
@@ -41,7 +41,7 @@ class RoomViewSet(viewsets.ModelViewSet):
 
 
 class FBpropertyViewSet(viewsets.ModelViewSet):
-    queryset = Feedback_property.objects.all()
+    queryset = FeedbackProperty.objects.all()
     serializer_class = FBpropertySerializer
 
 

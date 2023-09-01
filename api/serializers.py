@@ -63,7 +63,7 @@ class FBpropertySerializer(serializers.ModelSerializer):
     user_client = serializers.StringRelatedField(read_only=True)
 
     class Meta:
-        model = Feedback_property
+        model = FeedbackProperty
         fields = (
             'property',
             'raiting',
