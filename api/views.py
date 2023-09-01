@@ -67,7 +67,7 @@ class GeneralCatalogExecutorCardViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter, ]
     filterset_class = CatalogFilter
     ordering_fields = ['services__cost_service']
-    http_method_names = ['GET', ]
+    http_method_names = ['get', ]
 
 
 class ChatViewSet(viewsets.ModelViewSet):
