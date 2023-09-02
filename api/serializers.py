@@ -124,7 +124,7 @@ class GeneralCatalogExecutorCardSerializer(serializers.ModelSerializer):
             return lower_price
 
     def get_portfolio(self, obj):
-        all_media = obj.portfolio.all()
+        all_media = obj.portfolio.all().order_by('media_file__media_type')
         sorted_all_media = all_media.order_by('media_file__media_type')
         selection = []
         if sorted_all_media:
