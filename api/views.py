@@ -61,7 +61,7 @@ class ServiceViewSet(viewsets.ModelViewSet):
 
 
 class GeneralCatalogExecutorCardViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
+    queryset = User.objects.exclude(is_client=True)
     serializer_class = GeneralCatalogExecutorCardSerializer
     pagination_class = CatalogPagination
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter, ]
