@@ -6,7 +6,39 @@ from services.models import Service
 from users.models import Media_file, User
 
 
+class ServiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Service
+        fields = (
+            'name_service',
+            'image_service',
+            'cost_service',
+            'description_service',
+            'due_date',
+            'equipment',
+        )
+
+
+class MediafileSerializer(serializers.ModelSerializer):
+    user = serializers.SlugRelatedField(read_only=True, slug_field='id')
+
+    class Meta:
+        model = Media_file
+        fields = (
+            'user',
+            'link',
+            'title',
+            'media_type',
+            'is_main_photo',
+        )
+
+
 class UserSerializer(serializers.ModelSerializer):
+    servicies = ServiceSerializer(
+        many=True,
+    )
+    media_file = serializers.SerializerMethodField()
+
     class Meta:
         model = User
         fields = (
@@ -27,7 +59,14 @@ class UserSerializer(serializers.ModelSerializer):
             'birthday',
             'social_telegram',
             'social_vkontakte',
+            'servicies',
+            'media_file',
         )
+
+    def get_media_file(self, user, *args, **kwargs):
+        foto = user.media_file_set.all()
+        if foto is not None:
+            return MediafileSerializer(foto, many=True).data
 
 
 class PropertySerializer(serializers.ModelSerializer):
@@ -69,30 +108,6 @@ class FBpropertySerializer(serializers.ModelSerializer):
             'raiting',
             'descriptions',
             'user_client',
-        )
-
-
-class MediafileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Media_file
-        fields = (
-            'link',
-            'title',
-            'media_type',
-            'is_main_photo',
-        )
-
-
-class ServiceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Service
-        fields = (
-            'name_service',
-            'image_service',
-            'cost_service',
-            'description_service',
-            'due_date',
-            'equipment',
         )
 
 

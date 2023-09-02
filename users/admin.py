@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import User
+from .models import Media_file, User
 
 
 @admin.register(User)
@@ -38,5 +38,26 @@ class UserAdmin(admin.ModelAdmin):
         'is_client',
         'is_photographer',
         'is_video_operator',
+    )
+    empty_value_display = '-пусто-'
+
+
+@admin.register(Media_file)
+class Media_fileAdmin(admin.ModelAdmin):
+    list_display = (
+        'pk',
+        'user',
+        'link',
+        'title',
+        'media_type',
+        'is_main_photo',
+    )
+    search_fields = (
+        'title',
+        'user',
+    )
+    list_filter = (
+        'user',
+        'media_type',
     )
     empty_value_display = '-пусто-'

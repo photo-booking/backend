@@ -11,8 +11,14 @@ from services.models import Service
 
 
 class AccountManager(BaseUserManager):
-    def create_user(self, email, first_name='default', last_name='defaul',
-                    password=None, is_client=True):
+    def create_user(
+        self,
+        email,
+        first_name='default',
+        last_name='defaul',
+        password=None,
+        is_client=True,
+    ):
         user = self.model(
             email=email,
             first_name=first_name,
@@ -134,6 +140,12 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class Media_file(models.Model):
+    user = models.ForeignKey(
+        User,
+        verbose_name="Кому принадлжит файл",
+        on_delete=models.CASCADE,
+        null=True,
+    )
     link = models.URLField(verbose_name='Ссылка на медиа файл')
     title = models.CharField(
         verbose_name='Название', max_length=settings.MAX_LEN_NAME
