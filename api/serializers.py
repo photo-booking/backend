@@ -124,16 +124,15 @@ class GeneralCatalogExecutorCardSerializer(serializers.ModelSerializer):
             return lower_price
 
     def get_portfolio(self, obj):
-        all_media = obj.portfolio.all()
-        sorted_all_media = all_media.order_by('media_file__media_type')
+        all_media = obj.portfolio.all().order_by('media_file__media_type')
         selection = []
-        if sorted_all_media:
-            last_media = sorted_all_media[len(sorted_all_media) - 1]
+        if all_media:
+            last_media = all_media[len(all_media) - 1]
             if last_media.media_file.media_type == 'Video':
                 selection.append(last_media.media_file.link)
                 print(selection)
             for i in range(4):
-                media = sorted_all_media[i]
+                media = all_media[i]
                 selection.append(media.media_file.link)
                 print(selection)
                 if len(selection) == 4:
