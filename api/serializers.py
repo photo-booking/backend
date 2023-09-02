@@ -127,7 +127,7 @@ class GeneralCatalogExecutorCardSerializer(serializers.ModelSerializer):
         all_media = obj.portfolio.all().order_by('media_file__media_type')
         selection = []
         if all_media:
-            last_media = all_media[len(all_media) - 1]
+            last_media = all_media[-1]
             if last_media.media_file.media_type == 'Video':
                 selection.append(last_media.media_file.link)
             for i in range(4):
