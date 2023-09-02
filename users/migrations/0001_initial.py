@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Media_file',
+            name='MediaFile',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('link', models.URLField(verbose_name='Ссылка на медиа файл')),
@@ -54,7 +54,6 @@ class Migration(migrations.Migration):
                 ('is_staff', models.BooleanField(default=False)),
                 ('is_active', models.BooleanField(default=True)),
                 ('groups', models.ManyToManyField(blank=True, help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.', related_name='user_set', related_query_name='user', to='auth.group', verbose_name='groups')),
-                ('servicies', models.ManyToManyField(related_name='users', to='services.service', verbose_name='Услуги')),
                 ('user_permissions', models.ManyToManyField(blank=True, help_text='Specific permissions for this user.', related_name='user_set', related_query_name='user', to='auth.permission', verbose_name='user permissions')),
             ],
             options={

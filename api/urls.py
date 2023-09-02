@@ -12,7 +12,8 @@ from .views import (
     RoomViewSet,
     ServiceViewSet,
     UserViewSet,
-    index
+    index,
+    GeneralCatalogExecutorCardViewSet
 )
 
 app_name = 'api'
@@ -23,6 +24,7 @@ router_v1.register('properties', PropertyViewSet, 'properties')
 router_v1.register('rooms', RoomViewSet, 'rooms')
 router_v1.register('feedback_property', FBpropertyViewSet, 'feedback_property')
 router_v1.register('services', ServiceViewSet, 'services')
+router_v1.register('catalog', GeneralCatalogExecutorCardViewSet, 'catalog')
 router_v1.register('orders', OrderViewSet, 'orders')
 router_v1.register('chats', ChatViewSet, 'chats')
 router_v1.register('messages', MessageViewSet, 'messages')

@@ -9,3 +9,7 @@ class LimitPageNumberPagination(PageNumberPagination):
 class PortfolioLimitPageNumberPagination(LimitPageNumberPagination):
     page_size_query_param = 'limit'
     page_size = 3
+
+
+class CatalogPagination(LimitPageNumberPagination):
+    page_size = 15
