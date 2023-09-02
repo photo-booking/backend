@@ -130,11 +130,9 @@ class GeneralCatalogExecutorCardSerializer(serializers.ModelSerializer):
             last_media = all_media[len(all_media) - 1]
             if last_media.media_file.media_type == 'Video':
                 selection.append(last_media.media_file.link)
-                print(selection)
             for i in range(4):
                 media = all_media[i]
                 selection.append(media.media_file.link)
-                print(selection)
                 if len(selection) == 4:
                     break
 
