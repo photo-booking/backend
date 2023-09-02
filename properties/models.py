@@ -49,7 +49,7 @@ class Room(models.Model):
         verbose_name_plural = 'Комнаты в недвижимости'
 
 
-class Feedback_property(models.Model):
+class FeedbackProperty(models.Model):
     raiting = models.PositiveSmallIntegerField(
         verbose_name='Рейтинг предприятия', blank=True
     )

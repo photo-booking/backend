@@ -1,9 +1,9 @@
 from rest_framework import serializers
 
 from orders.models import Chat, Message, Order, Raiting
-from properties.models import Feedback_property, Property, Room
-from services.models import Service
-from users.models import Media_file, User
+from properties.models import FeedbackProperty, Property, Room
+from services.models import Service, MediaFile
+from users.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -63,7 +63,7 @@ class FBpropertySerializer(serializers.ModelSerializer):
     user_client = serializers.StringRelatedField(read_only=True)
 
     class Meta:
-        model = Feedback_property
+        model = FeedbackProperty
         fields = (
             'property',
             'raiting',
@@ -74,7 +74,7 @@ class FBpropertySerializer(serializers.ModelSerializer):
 
 class MediafileSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Media_file
+        model = MediaFile
         fields = (
             'link',
             'title',
@@ -94,6 +94,49 @@ class ServiceSerializer(serializers.ModelSerializer):
             'due_date',
             'equipment',
         )
+
+
+class GeneralCatalogExecutorCardSerializer(serializers.ModelSerializer):
+    full_name = serializers.SerializerMethodField()
+    price = serializers.SerializerMethodField()
+    portfolio = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = (
+            'id',
+            'full_name',
+            'is_client',
+            'is_photographer',
+            'is_video_operator',
+            'about_me',
+            'price',
+            'portfolio',
+        )
+
+    def get_full_name(self, obj):
+        return f'{obj.first_name} {obj.last_name}'
+
+    def get_price(self, obj):
+        services = obj.services.all()
+        if services:
+            lower_price = services.order_by('cost_service')[0].cost_service
+            return lower_price
+
+    def get_portfolio(self, obj):
+        all_media = obj.portfolio.all().order_by('media_file__media_type')
+        selection = []
+        if all_media:
+            last_media = all_media[-1]
+            if last_media.media_file.media_type == 'Video':
+                selection.append(last_media.media_file.link)
+            for i in range(4):
+                media = all_media[i]
+                selection.append(media.media_file.link)
+                if len(selection) == 4:
+                    break
+
+        return selection
 
 
 class ChatSerializer(serializers.ModelSerializer):
