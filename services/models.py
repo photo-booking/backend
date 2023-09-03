@@ -86,3 +86,8 @@ class Portfolio(models.Model):
                                blank=False,
                                related_name='portfolio')
     media_file = models.ForeignKey(MediaFile, on_delete=models.CASCADE)
+
+
+class ServiceMedia(models.Model):
+    portfolio = models.ForeignKey(Portfolio, on_delete=models.CASCADE, related_name='service')
+    service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='portfolio')
