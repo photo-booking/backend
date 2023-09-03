@@ -3,9 +3,12 @@ from django.db import models
 
 
 class Tag(models.Model):
-    name = models.CharField(max_length=settings.MAX_LEN_NAME, db_index=True,
-                            verbose_name='имя',
-                            unique=True)
+    name = models.CharField(
+        max_length=settings.MAX_LEN_NAME,
+        db_index=True,
+        verbose_name='имя',
+        unique=True,
+    )
     slug = models.SlugField('Индификатор', unique=True)
 
     def __str__(self):
@@ -20,36 +23,26 @@ class Service(models.Model):
         'users.User',
         verbose_name='Автор',
         on_delete=models.CASCADE,
-        related_name='services'
+        related_name='services',
     )
     name_service = models.CharField(
-        verbose_name='Название услуги',
-        max_length=settings.MAX_LEN_NAME
+        verbose_name='Название услуги', max_length=settings.MAX_LEN_NAME
     )
     image_service = models.ImageField(
         verbose_name='Фотография услуги',
         upload_to='users/tags',
         blank=True,
     )
-    cost_service = models.PositiveIntegerField(
-        verbose_name='Стоимость услуги'
-    )
+    cost_service = models.PositiveIntegerField(verbose_name='Стоимость услуги')
     description_service = models.TextField(
-        verbose_name='Описание услуги',
-        max_length=settings.MAX_LEN_NAME
+        verbose_name='Описание услуги', max_length=settings.MAX_LEN_NAME
     )
-    due_date = models.DateTimeField(
-        verbose_name='Срок выполнения'
-    )
+    due_date = models.DateTimeField(verbose_name='Срок выполнения')
     equipment = models.CharField(
-        verbose_name='Оборудование',
-        max_length=settings.MAX_LEN_NAME
+        verbose_name='Оборудование', max_length=settings.MAX_LEN_NAME
     )
     tag = models.ManyToManyField(
-        Tag,
-        verbose_name='Вид съемки',
-        blank=True,
-        related_name='services'
+        Tag, verbose_name='Вид съемки', blank=True, related_name='services'
     )
 
     class Meta:
@@ -61,6 +54,12 @@ class Service(models.Model):
 
 
 class MediaFile(models.Model):
+    author = models.ForeignKey(
+        'users.User',
+        verbose_name='Автор',
+        on_delete=models.CASCADE,
+        related_name='mediafiles',
+    )
     link = models.URLField(verbose_name='Ссылка на медиа файл')
     title = models.CharField(
         verbose_name='Название', max_length=settings.MAX_LEN_NAME
@@ -81,8 +80,25 @@ class MediaFile(models.Model):
 
 
 class Portfolio(models.Model):
-    author = models.ForeignKey('users.User',
-                               on_delete=models.CASCADE,
-                               blank=False,
-                               related_name='portfolio')
+    author = models.ForeignKey(
+        'users.User',
+        on_delete=models.CASCADE,
+        blank=False,
+        related_name='portfolio',
+    )
     media_file = models.ForeignKey(MediaFile, on_delete=models.CASCADE)
+
+
+class MediaService(models.Model):
+    service = models.ForeignKey(
+        Service,
+        on_delete=models.CASCADE,
+        blank=False,
+        related_name='media_services',
+    )
+    media_file = models.ForeignKey(
+        MediaFile,
+        on_delete=models.CASCADE,
+        blank=False,
+        related_name='media_services',
+    )
