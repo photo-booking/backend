@@ -1,12 +1,14 @@
+from django.shortcuts import render
+from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet as DjoserUserViewSet
-from rest_framework import viewsets
+from rest_framework import viewsets, filters
 
-from api.paginators import LimitPageNumberPagination
+from api.paginators import LimitPageNumberPagination, CatalogPagination
 from orders.models import Chat, Message, Order, Raiting
-from properties.models import Feedback_property, Property, Room
-from services.models import Service
-from users.models import Media_file, User
-
+from properties.models import FeedbackProperty, Property, Room
+from services.filters import CatalogFilter
+from services.models import Service, MediaFile
+from users.models import User
 from .serializers import (
     ChatSerializer,
     FBpropertySerializer,
@@ -16,8 +18,16 @@ from .serializers import (
     PropertySerializer,
     RaitingSerializer,
     RoomSerializer,
-    ServiceSerializer,
+    ServiceSerializer, GeneralCatalogExecutorCardSerializer,
 )
+
+
+def index(request):
+    context = {
+        'users': User.objects.order_by('email')
+        if request.user.is_authenticated else []
+    }
+    return render(request, 'index.html', context)
 
 
 class UserViewSet(DjoserUserViewSet):
@@ -26,7 +36,7 @@ class UserViewSet(DjoserUserViewSet):
 
 
 class MediafileViewSet(viewsets.ModelViewSet):
-    queryset = Media_file.objects.all()
+    queryset = MediaFile.objects.all()
     serializer_class = MediafileSerializer
 
 
@@ -41,13 +51,23 @@ class RoomViewSet(viewsets.ModelViewSet):
 
 
 class FBpropertyViewSet(viewsets.ModelViewSet):
-    queryset = Feedback_property.objects.all()
+    queryset = FeedbackProperty.objects.all()
     serializer_class = FBpropertySerializer
 
 
 class ServiceViewSet(viewsets.ModelViewSet):
     queryset = Service.objects.all()
     serializer_class = ServiceSerializer
+
+
+class GeneralCatalogExecutorCardViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.exclude(is_client=True)
+    serializer_class = GeneralCatalogExecutorCardSerializer
+    pagination_class = CatalogPagination
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter, ]
+    filterset_class = CatalogFilter
+    ordering_fields = ['services__cost_service']
+    http_method_names = ['get', ]
 
 
 class ChatViewSet(viewsets.ModelViewSet):

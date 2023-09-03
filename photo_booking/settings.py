@@ -28,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY', default='DEFAULT_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(os.environ.get('DEBUG', False))
+DEBUG = bool(os.environ.get('DEBUG', True))
 
 ALLOWED_HOSTS = [
     '185.41.162.63',
@@ -55,9 +55,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'drf_yasg',  # Регистрация приложения для создания динамической документации
-    'channels',  # Регистрация приложения channels
+    'drf_yasg',
+    'channels',
     'rest_framework',
+    'social_django',
     'rest_framework.authtoken',
     'django_filters',
     'djoser',
@@ -68,7 +69,7 @@ INSTALLED_APPS = [
     'services.apps.ServicesConfig',
     'properties.apps.PropertiesConfig',
     'orders.apps.OrdersConfig',
-    'chat.apps.ChatConfig',  # Регистрация приложения чат
+    'chat.apps.ChatConfig',
 ]
 
 MIDDLEWARE = [
@@ -94,6 +95,8 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "social_django.context_processors.backends",
+                "social_django.context_processors.login_redirect",
             ],
         },
     },
@@ -167,11 +170,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-# Vkontakte
-VK_APP_ID = os.getenv('VK_APP_ID')
-VK_APP_SECRET = os.getenv('VK_API_SECRET')
-
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
@@ -188,8 +186,8 @@ REST_FRAMEWORK = {
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -208,9 +206,8 @@ NO_REGISTER_USERNAME = 'me'
 # DJOSER
 
 DJOSER = {
-    'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
-    'ACTIVATION_URL': '#/activate/{uid}/{token}',
-    'SEND_ACTIVATION_EMAIL': False,  # Надо настроить рассылку email сначала
+    'PASSWORD_RESET_CONFIRM_URL': 'api/users/reset_password_confirm/{uid}/{token}',
+    'PASSWORD_CHANGED_EMAIL_CONFIRMATION': True,
     'HIDE_USERS': False,
     'PERMISSIONS': {
         'user': ('api.permissions.AdminOrAuthorOrReadOnly',),
@@ -222,3 +219,38 @@ DJOSER = {
         'user_list': 'api.serializers.UserSerializer',
     },
 }
+
+# SOCIAL OAUTH2:
+SOCIAL_AUTH_URL_NAMESPACE = 'api:social'
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('GOOGLE_CLIENT_ID')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
+    'https://www.googleapis.com/auth/userinfo.email',
+    'https://www.googleapis.com/auth/userinfo.profile',
+]
+LOGIN_URL = 'api/auth/login/google-oauth2/'
+LOGIN_REDIRECT_URL = '/api/users/'
+
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.google.GoogleOAuth2',
+    'social_core.backends.vk.VKOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+# Vkontakte
+SOCIAL_AUTH_VK_OAUTH2_KEY = os.getenv('VK_APP_ID')
+SOCIAL_AUTH_VK_OAUTH2_SECRET = os.getenv('VK_API_SECRET')
+SOCIAL_AUTH_VK_OAUTH2_SCOPE = [
+    'email',
+]
+
+# Отпарвка писем для восстановления пароля smtp
+# EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+# EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
+
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = 587
