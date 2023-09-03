@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet as DjoserUserViewSet
-from rest_framework import filters, viewsets
+from rest_framework import viewsets
 from rest_framework.filters import SearchFilter
 
 from api.paginators import (
@@ -46,9 +46,9 @@ class UserViewSet(DjoserUserViewSet):
     search_fields = ['^first_name', '^last_name']
     filterset_class = UsersFilter
 
-    def perform_create(self, serializer):
-        print(self.request.user)
-        serializer.save(user=self.request.user)
+    # def perform_create(self, serializer):
+    #     print(self.request.user)
+    #     serializer.save(user=self.request.user)
 
     # def get_queryset(self):
     #     queryset = User.objects.all()
@@ -98,7 +98,6 @@ class GeneralCatalogExecutorCardViewSet(viewsets.ModelViewSet):
     pagination_class = CatalogPagination
     filter_backends = [
         DjangoFilterBackend,
-        filters.OrderingFilter,
     ]
     filterset_class = CatalogFilter
     ordering_fields = ['services__cost_service']

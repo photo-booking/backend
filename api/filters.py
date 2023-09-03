@@ -21,7 +21,7 @@ class UsersFilter(django_filters.FilterSet):
         method='filter_is_video_operator'
     )
     tags = django_filters.AllValuesMultipleFilter(
-        field_name='servicies__name_service'
+        field_name='services__name_service'
     )
     user = django_filters.ModelChoiceFilter(queryset=User.objects.all())
 

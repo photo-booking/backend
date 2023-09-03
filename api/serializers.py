@@ -5,7 +5,7 @@ from rest_framework import serializers
 
 from orders.models import Chat, Message, Order, Raiting
 from properties.models import FeedbackProperty, Property, Room
-from services.models import MediaFile, Service
+from services.models import MediaFile, Service, Tag
 from users.models import User
 
 
@@ -18,17 +18,37 @@ class Base64ImageField(serializers.ImageField):
         return super().to_internal_value(data)
 
 
+class TagsSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели Tag."""
+
+    class Meta:
+        model = Tag
+        fields = '__all__'
+
+
 class ServiceSerializer(serializers.ModelSerializer):
+    image_service = Base64ImageField(required=False, allow_null=True)
+    tag = TagsSerializer(read_only=True, many=True)
+    #    authors = serializers.SerializerMethodField()
+
     class Meta:
         model = Service
         fields = (
+            #            'authors',
             'name_service',
             'image_service',
             'cost_service',
             'description_service',
             'due_date',
             'equipment',
+            'tag',
         )
+
+    # def get_authors(self, user, *args, **kwargs):
+    #     print(user)
+    #     authors = user.services.all()
+    #     if authors is not None:
+    #         return MediafileSerializer(authors, many=True).data
 
 
 class MediafileSerializer(serializers.ModelSerializer):
@@ -48,10 +68,8 @@ class MediafileSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     profile_photo = Base64ImageField(required=False, allow_null=True)
 
-    servicies = ServiceSerializer(
-        many=True,
-    )
-    media_file = serializers.SerializerMethodField()
+    services = serializers.SerializerMethodField()
+    mediafiles = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -73,14 +91,21 @@ class UserSerializer(serializers.ModelSerializer):
             'birthday',
             'social_telegram',
             'social_vkontakte',
-            'servicies',
-            'media_file',
+            'services',
+            'mediafiles',
         )
 
-    def get_media_file(self, user, *args, **kwargs):
-        foto = user.media_file_set.all()
+    def get_mediafiles(self, user, *args, **kwargs):
+        print(1111111111)
+        print(user.mediafiles.all())
+        foto = user.services__mediafiles.all()
         if foto is not None:
             return MediafileSerializer(foto, many=True).data
+
+    def get_services(self, user, *args, **kwargs):
+        services = user.services.all()
+        if services is not None:
+            return ServiceSerializer(services, many=True).data
 
 
 class PropertySerializer(serializers.ModelSerializer):
@@ -122,21 +147,6 @@ class FBpropertySerializer(serializers.ModelSerializer):
             'raiting',
             'descriptions',
             'user_client',
-        )
-
-
-class ServiceSerializer(serializers.ModelSerializer):
-    image_service = Base64ImageField(required=False, allow_null=True)
-
-    class Meta:
-        model = Service
-        fields = (
-            'name_service',
-            'image_service',
-            'cost_service',
-            'description_service',
-            'due_date',
-            'equipment',
         )
 
 

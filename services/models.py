@@ -19,10 +19,9 @@ class Tag(models.Model):
 
 
 class Service(models.Model):
-    author = models.ForeignKey(
+    author = models.ManyToManyField(
         'users.User',
         verbose_name='Автор',
-        on_delete=models.CASCADE,
         related_name='services',
     )
     name_service = models.CharField(
