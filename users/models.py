@@ -54,7 +54,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         max_length=settings.MAX_LEN_NAME,
     )
     profile_photo = models.ImageField(
-        verbose_name='Фото профиля', upload_to='users/profile', blank=True
+        verbose_name='Фото профиля',
+        upload_to='users/profile_photo',
+        blank=True
     )
     email = models.EmailField(
         verbose_name='Почта для регистрации', unique=True
