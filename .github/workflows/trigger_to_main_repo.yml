@@ -10,7 +10,7 @@ name: Main Repository Dispatch
 on:
   push:
     branches:
-      - workflow
+      - workflow_2
 
 jobs:
   send_dispatch:
