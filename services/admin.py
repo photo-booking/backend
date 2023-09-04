@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import MediaFile, Service
+from .models import MediaFile, MediaService, Service, Tag
 
 
 @admin.register(Service)
@@ -12,6 +12,8 @@ class ServiceAdmin(admin.ModelAdmin):
         'description_service',
         'due_date',
         'equipment',
+        'min_duration',
+        'tag',
     )
     search_fields = (
         'cost_service',
@@ -23,6 +25,23 @@ class ServiceAdmin(admin.ModelAdmin):
         'due_date',
     )
     empty_value_display = '-пусто-'
+
+    def tag(self, obj):
+        return ', '.join([tag.services.pk for tag in obj.services.all()])
+
+
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    list_display = (
+        'pk',
+        'name',
+        'slug',
+    )
+    search_fields = (
+        'pk',
+        'slug',
+        'name',
+    )
 
 
 @admin.register(MediaFile)
@@ -49,5 +68,18 @@ class MediaFileAdmin(admin.ModelAdmin):
 
     def service(self, obj):
         return ', '.join(
-            [service.name_service for service in obj.service_set.all()]
+            [
+                service.service.name_service
+                for service in obj.media_services.all()
+            ]
         )
+
+
+@admin.register(MediaService)
+class MediaServiceAdmin(admin.ModelAdmin):
+    list_display = (
+        'pk',
+        'service',
+        'media_file',
+    )
+    search_fields = ('pk',)

@@ -40,7 +40,7 @@ def index(request):
 
 
 class UserViewSet(DjoserUserViewSet):
-    queryset = User.objects.all()
+    #    queryset = User.objects.all()
     pagination_class = LimitPageNumberPagination
     filter_backends = [DjangoFilterBackend, SearchFilter]
     search_fields = ['^first_name', '^last_name']
@@ -50,17 +50,17 @@ class UserViewSet(DjoserUserViewSet):
     #     print(self.request.user)
     #     serializer.save(user=self.request.user)
 
-    # def get_queryset(self):
-    #     queryset = User.objects.all()
-    #     is_photographer = self.request.query_params.get('is_photographer')
-    # is_video_operator = self.request.query_params.get('is_video_operator')
-    #     if is_photographer is not None:
-    #         queryset = User.objects.filter(is_photographer=True)
-    #         return queryset
-    #     elif is_video_operator is not None:
-    #         queryset = User.objects.filter(is_video_operator=True)
-    #         return queryset
-    #     return queryset
+    def get_queryset(self):
+        queryset = User.objects.all()
+        is_photographer = self.request.query_params.get('is_photographer')
+        is_video_operator = self.request.query_params.get('is_video_operator')
+        if is_photographer is not None:
+            queryset = User.objects.filter(is_photographer=True)
+            return queryset
+        elif is_video_operator is not None:
+            queryset = User.objects.filter(is_video_operator=True)
+            return queryset
+        return queryset
 
 
 class MediafileViewSet(viewsets.ModelViewSet):
@@ -69,7 +69,7 @@ class MediafileViewSet(viewsets.ModelViewSet):
     pagination_class = PortfolioLimitPageNumberPagination
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save(author=self.request.user)
 
 
 class PropertyViewSet(viewsets.ModelViewSet):

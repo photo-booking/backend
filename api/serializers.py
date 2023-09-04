@@ -26,43 +26,54 @@ class TagsSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class ShortUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'first_name', 'last_name', 'profile_photo', 'email')
+
+
 class ServiceSerializer(serializers.ModelSerializer):
     image_service = Base64ImageField(required=False, allow_null=True)
     tag = TagsSerializer(read_only=True, many=True)
-    #    authors = serializers.SerializerMethodField()
+    authors = serializers.SerializerMethodField()
 
     class Meta:
         model = Service
         fields = (
-            #            'authors',
+            'authors',
             'name_service',
             'image_service',
             'cost_service',
             'description_service',
             'due_date',
             'equipment',
+            'min_duration',
             'tag',
         )
 
-    # def get_authors(self, user, *args, **kwargs):
-    #     print(user)
-    #     authors = user.services.all()
-    #     if authors is not None:
-    #         return MediafileSerializer(authors, many=True).data
+    def get_authors(self, services, *args, **kwargs):
+        authors = services.author.all()
+        if authors is not None:
+            return ShortUserSerializer(authors, many=True).data
 
 
 class MediafileSerializer(serializers.ModelSerializer):
-    user = serializers.SlugRelatedField(read_only=True, slug_field='id')
+    authors = serializers.SerializerMethodField()
 
     class Meta:
         model = MediaFile
         fields = (
-            'user',
+            'authors',
             'link',
             'title',
             'media_type',
             'is_main_photo',
         )
+
+    def get_authors(self, media, *args, **kwargs):
+        authors = media.author
+        if authors is not None:
+            return ShortUserSerializer(authors).data
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -96,9 +107,7 @@ class UserSerializer(serializers.ModelSerializer):
         )
 
     def get_mediafiles(self, user, *args, **kwargs):
-        print(1111111111)
-        print(user.mediafiles.all())
-        foto = user.services__mediafiles.all()
+        foto = user.mediafiles.all()[:6]
         if foto is not None:
             return MediafileSerializer(foto, many=True).data
 

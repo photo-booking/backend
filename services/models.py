@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.validators import MinValueValidator
 from django.db import models
 
 
@@ -37,6 +38,11 @@ class Service(models.Model):
         verbose_name='Описание услуги', max_length=settings.MAX_LEN_NAME
     )
     due_date = models.DateTimeField(verbose_name='Срок выполнения')
+    min_duration = models.PositiveSmallIntegerField(
+        verbose_name='Минимальное время съемки в часах',
+        help_text='введите время съемки в часах',
+        validators=[MinValueValidator(1, 'минимальное значение 1')],
+    )
     equipment = models.CharField(
         verbose_name='Оборудование', max_length=settings.MAX_LEN_NAME
     )
