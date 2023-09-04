@@ -210,8 +210,8 @@ DJOSER = {
     'PASSWORD_CHANGED_EMAIL_CONFIRMATION': True,
     'HIDE_USERS': False,
     'PERMISSIONS': {
-        'user': ('api.permissions.AdminOrAuthorOrReadOnly',),
-        'user_list': ('api.permissions.AdminOrAuthorOrReadOnly',),
+        'user': ('api.permissions.AdminOrReadOnly',),
+        'user_list': ('api.permissions.AdminOrReadOnly',),
     },
     'SERIALIZERS': {
         'current_user': 'api.serializers.UserSerializer',
