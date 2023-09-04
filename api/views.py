@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet as DjoserUserViewSet
 from rest_framework import viewsets, filters
+from rest_framework.response import Response
 
 from api.paginators import LimitPageNumberPagination, CatalogPagination
 from orders.models import Chat, Message, Order, Raiting
@@ -10,6 +11,7 @@ from services.filters import CatalogFilter
 from services.models import Service, MediaFile
 from users.models import User
 from .serializers import (
+    UserSerializer,
     ChatSerializer,
     FBpropertySerializer,
     MediafileSerializer,
@@ -33,6 +35,11 @@ def index(request):
 class UserViewSet(DjoserUserViewSet):
     queryset = User.objects.all()
     pagination_class = LimitPageNumberPagination
+
+    def get(self, request):
+        users = User.objects.all()
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
 
 
 class MediafileViewSet(viewsets.ModelViewSet):
