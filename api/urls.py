@@ -3,7 +3,9 @@ from rest_framework.routers import DefaultRouter
 
 from .views import (
     ChatViewSet,
+    ExecutorServiceViewSet,
     FBpropertyViewSet,
+    GeneralCatalogExecutorCardViewSet,
     MediafileViewSet,
     MessageViewSet,
     OrderViewSet,
@@ -13,7 +15,6 @@ from .views import (
     ServiceViewSet,
     UserViewSet,
     index,
-    GeneralCatalogExecutorCardViewSet
 )
 
 app_name = 'api'
@@ -30,6 +31,11 @@ router_v1.register('chats', ChatViewSet, 'chats')
 router_v1.register('messages', MessageViewSet, 'messages')
 router_v1.register('media_files', MediafileViewSet, 'media_files')
 router_v1.register('raitings', RaitingViewSet, 'raitings')
+router_v1.register(
+    r'catalog/(?P<user_id>[^/.]+)/services',
+    ExecutorServiceViewSet,
+    'Сервисы работника',
+)
 
 urlpatterns = (
     path('', include(router_v1.urls)),

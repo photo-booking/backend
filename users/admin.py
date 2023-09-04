@@ -17,6 +17,7 @@ class UserAdmin(admin.ModelAdmin):
         'city',
         'raiting',
         'about_me',
+        'equipment',
         'is_client',
         'is_photographer',
         'is_video_operator',

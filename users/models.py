@@ -9,8 +9,14 @@ from phone_field import PhoneField
 
 
 class AccountManager(BaseUserManager):
-    def create_user(self, email, first_name='default', last_name='defaul',
-                    password=None, is_client=True):
+    def create_user(
+        self,
+        email,
+        first_name='default',
+        last_name='defaul',
+        password=None,
+        is_client=True,
+    ):
         user = self.model(
             email=email,
             first_name=first_name,
@@ -83,6 +89,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     about_me = models.TextField(
         verbose_name='Обо мне', max_length=settings.MAX_TEXT_LEN
+    )
+    equipment = models.CharField(
+        verbose_name='Оборудование',
+        max_length=settings.MAX_LEN_ABOUT_ME,
+        blank=True,
     )
     is_client = models.BooleanField(verbose_name='Роль.Клиент', default=True)
     is_photographer = models.BooleanField(
