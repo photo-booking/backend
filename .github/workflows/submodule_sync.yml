@@ -4,8 +4,11 @@ name: Submodule Updates
 #  pull_request:
 #    types:
 #      - closed
-#    branches: [develop, main]
-
+#    branches: [main]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   build:
