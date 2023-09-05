@@ -1,27 +1,35 @@
 from django.shortcuts import render, redirect
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet as DjoserUserViewSet
+
 from rest_framework import viewsets, filters
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
+from rest_framework.filters import SearchFilter
 
-from api.paginators import LimitPageNumberPagination, CatalogPagination
+from api.paginators import (
+    CatalogPagination,
+    LimitPageNumberPagination,
+    PortfolioLimitPageNumberPagination,
+)
 from orders.models import Chat, Message, Order, Raiting
 from properties.models import FeedbackProperty, Property, Room
 from services.filters import CatalogFilter
-from services.models import Service, MediaFile
+from services.models import MediaFile, Service
 from users.models import User
+
+from .filters import UsersFilter
 from .serializers import (
-    UserSerializer,
     ChatSerializer,
     FBpropertySerializer,
+    GeneralCatalogExecutorCardSerializer,
     MediafileSerializer,
     MessageSerializer,
     OrderSerializer,
     PropertySerializer,
     RaitingSerializer,
     RoomSerializer,
-    ServiceSerializer, GeneralCatalogExecutorCardSerializer,
+    ServiceSerializer,
 )
 
 
@@ -37,24 +45,38 @@ def user_token(request):
 def index(request):
     context = {
         'users': User.objects.order_by('email')
-        if request.user.is_authenticated else []
+        if request.user.is_authenticated
+        else []
     }
     return render(request, 'index.html', context)
 
 
 class UserViewSet(DjoserUserViewSet):
-    queryset = User.objects.all()
     pagination_class = LimitPageNumberPagination
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    search_fields = ['^first_name', '^last_name']
+    filterset_class = UsersFilter
 
-    def get(self, request):
-        users = User.objects.all()
-        serializer = UserSerializer(users, many=True)
-        return Response(serializer.data)
+    def get_queryset(self):
+        queryset = User.objects.all()
+        is_photographer = self.request.query_params.get('is_photographer')
+        is_video_operator = self.request.query_params.get('is_video_operator')
+        if is_photographer is not None:
+            queryset = User.objects.filter(is_photographer=True)
+            return queryset
+        elif is_video_operator is not None:
+            queryset = User.objects.filter(is_video_operator=True)
+            return queryset
+        return queryset
 
 
 class MediafileViewSet(viewsets.ModelViewSet):
     queryset = MediaFile.objects.all()
     serializer_class = MediafileSerializer
+    pagination_class = PortfolioLimitPageNumberPagination
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
 
 
 class PropertyViewSet(viewsets.ModelViewSet):
@@ -81,10 +103,14 @@ class GeneralCatalogExecutorCardViewSet(viewsets.ModelViewSet):
     queryset = User.objects.exclude(is_client=True)
     serializer_class = GeneralCatalogExecutorCardSerializer
     pagination_class = CatalogPagination
-    filter_backends = [DjangoFilterBackend, filters.OrderingFilter, ]
+    filter_backends = [
+        DjangoFilterBackend,
+    ]
     filterset_class = CatalogFilter
     ordering_fields = ['services__cost_service']
-    http_method_names = ['get', ]
+    http_method_names = [
+        'get',
+    ]
 
 
 class ChatViewSet(viewsets.ModelViewSet):
