@@ -1,0 +1,39 @@
+name: Submodule Updates
+
+#on:
+#  pull_request:
+#    types:
+#      - closed
+#    branches: [main]
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Submodule update
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+
+    env:
+      PARENT_REPOSITORY: 'photo-booking/photo_booking_full'
+      CHECKOUT_BRANCH: 'develop'
+      PR_AGAINST_BRANCH: 'main'
+      OWNER: 'photo-booking'
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      - name: run action
+        id: run_action
+        uses: releasehub-com/github-action-create-pr-parent-submodule@v1
+        with:
+          github_token: ${{ secrets.DISPATCH_HOOK_TOKEN }}
+          parent_repository: ${{ env.PARENT_REPOSITORY }}
+          checkout_branch: ${{ env.CHECKOUT_BRANCH}}
+          pr_against_branch: ${{ env.PR_AGAINST_BRANCH }}
+          owner: ${{ env.OWNER }}
