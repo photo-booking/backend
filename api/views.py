@@ -1,8 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet as DjoserUserViewSet
 from rest_framework import viewsets, filters
 from rest_framework.response import Response
+from rest_framework.authtoken.models import Token
 
 from api.paginators import LimitPageNumberPagination, CatalogPagination
 from orders.models import Chat, Message, Order, Raiting
@@ -22,6 +23,15 @@ from .serializers import (
     RoomSerializer,
     ServiceSerializer, GeneralCatalogExecutorCardSerializer,
 )
+
+
+def user_token(request):
+    if request.user.is_authenticated:
+        token, e = Token.objects.get_or_create(user=request.user)
+        print(token)
+        return redirect('/api/main/?token=' + token.key)
+    else:
+        return redirect('/api/main/?error=true')
 
 
 def index(request):
