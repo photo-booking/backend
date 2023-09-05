@@ -14,6 +14,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -221,9 +222,11 @@ DJOSER = {
 }
 
 # SOCIAL OAUTH2:
+SOCIAL_AUTH_JSONFIELD_ENABLED = True
+SOCIAL_AUTH_STRATEGY = 'api.social_auth.CustomStrategy'
 SOCIAL_AUTH_URL_NAMESPACE = 'api:social'
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('GOOGLE_CLIENT_ID')
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '455387379536-ods25r92lgpvmc3vsfqvlnrbna2qmi16.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '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'
 SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
     'https://www.googleapis.com/auth/userinfo.email',
     'https://www.googleapis.com/auth/userinfo.profile',

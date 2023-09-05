@@ -1,6 +1,7 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
+from .social_auth import post_token
 from .views import (
     ChatViewSet,
     FBpropertyViewSet,
@@ -35,5 +36,7 @@ urlpatterns = (
     path('', include(router_v1.urls)),
     path('auth/', include('djoser.urls.authtoken')),
     path('social/', include('social_django.urls', namespace="social")),
+    path('google-oauth2/', post_token, name='google_token'),
+    # path(r'^auth/', include('djoser.social.urls')),
     path('main/', index),
 )
