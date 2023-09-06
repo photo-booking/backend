@@ -1,7 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet as DjoserUserViewSet
+
 from rest_framework import viewsets
+from rest_framework.authtoken.models import Token
 from rest_framework.filters import SearchFilter
 
 from api.paginators import (
@@ -28,6 +30,17 @@ from .serializers import (
     RoomSerializer,
     ServiceSerializer,
 )
+
+
+def user_token(request):
+    if request.user.is_authenticated:
+        token, e = Token.objects.get_or_create(user=request.user)
+        return redirect(
+            'https://photo-market.acceleratorpracticum.ru/sign-in/?token='
+            + token.key)
+    else:
+        return redirect(
+            'https://photo-market.acceleratorpracticum.ru/sign-in/?error=true')
 
 
 def index(request):
