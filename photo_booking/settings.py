@@ -44,6 +44,12 @@ CSRF_TRUSTED_ORIGINS = [
     'http://185.41.162.63',
 ]
 
+# CORS domains
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:8000',
+    'http://backend:8000'
+]
+
 AUTH_USER_MODEL = 'users.User'
 
 # Application definition
@@ -56,6 +62,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'drf_yasg',
+    'corsheaders',
     'channels',
     'rest_framework',
     'social_django',
@@ -80,6 +87,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = "photo_booking.urls"
