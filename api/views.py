@@ -36,7 +36,6 @@ from .serializers import (
 def user_token(request):
     if request.user.is_authenticated:
         token, e = Token.objects.get_or_create(user=request.user)
-        print(token)
         return redirect('https://photo-market.acceleratorpracticum.ru/sign-in/?token=' + token.key)
     else:
         return redirect('https://photo-market.acceleratorpracticum.ru/sign-in/?error=true')
