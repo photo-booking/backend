@@ -93,9 +93,9 @@ class UserViewSet(DjoserUserViewSet):
 
     @action(['get', 'post'], detail=False)
     def reset_password(self, request, *args, **kwargs):
-        if request.method == 'get':
+        if request.method == 'GET':
             return self.retrieve(request, *args, **kwargs)
-        elif request.method == 'post':
+        elif request.method == 'POST':
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             user = serializer.get_user()
