@@ -14,28 +14,67 @@ class СontractorFilter(SearchFilter):
 
 
 class UsersFilter(django_filters.FilterSet):
-    is_photographer = django_filters.BooleanFilter(
-        method='filter_is_photographer'
+    # is_photographer = django_filters.BooleanFilter(
+    #     method='filter_is_photographer'
+    # )
+    spec = django_filters.BooleanFilter(
+        method='filter_spec',
+        label='укажите photographer или videographer или all',
     )
-    is_video_operator = django_filters.BooleanFilter(
-        method='filter_is_video_operator'
+    max_cost = django_filters.BooleanFilter(
+        method='filter_max_cost', label='укажите max_cost bool'
     )
-    tags = django_filters.AllValuesMultipleFilter(
-        field_name='services__name_service'
+    min_cost = django_filters.BooleanFilter(
+        method='filter_min_cost', label='укажите min_cost bool'
     )
-    user = django_filters.ModelChoiceFilter(queryset=User.objects.all())
+    # is_video_operator = django_filters.BooleanFilter(
+    #     method='filter_is_video_operator'
+    # )
+    # tags = django_filters.AllValuesMultipleFilter(
+    #     field_name='services__name_service'
+    # )
+    user__services = django_filters.CharFilter(
+        field_name='services__name_service',
+        lookup_expr='contains',
+        label='Отфильтруйте по услуге (например Babyfoto)',
+    )
 
     class Meta:
         model = User
-        fields = ('tags', 'user', 'is_photographer', 'is_video_operator')
+        fields = (
+            #            'tags',
+            'user__services',
+            # 'is_photographer',
+            # 'is_video_operator',
+            'spec',
+            'max_cost',
+            'max_cost',
+        )
 
-    def filter_is_photographer(self, queryset, name, value):
-        print(999)
-        if value and self.request.user.is_authenticated:
-            return queryset.filter(is_photographer=True)
-        return queryset
+    # def filter_is_photographer(self, queryset, name, value):
+    #     if value:
+    #         return queryset.filter(is_photographer=
+    # True).values_list('user__id', flat=True)
+    #     return queryset
 
-    def filter_is_video_operator(self, queryset, name, value):
+    # def filter_is_video_operator(self, queryset, name, value):
+    #     if value and self.request.user.is_authenticated:
+    #         return queryset.filter(is_video_operator=True)
+    #     return queryset
+
+    def filter_spec(self, queryset, name, value):
         if value and self.request.user.is_authenticated:
-            return queryset.filter(is_video_operator=True)
-        return queryset
+            queryset = queryset.filter(
+                is_video_operator=True
+            ) | queryset.filter(is_video_operator=True)
+            return queryset
+
+    def filter_max_cost(self, queryset, name, value):
+        if value and self.request.user.is_authenticated:
+            queryset = queryset.order_by('services__cost_service')
+            return queryset
+
+    def filter_min_cost(self, queryset, name, value):
+        if value and self.request.user.is_authenticated:
+            queryset = queryset.order_by('-services__cost_service')
+            return queryset

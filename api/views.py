@@ -1,7 +1,6 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect, render
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet as DjoserUserViewSet
-
 from rest_framework import viewsets
 from rest_framework.authtoken.models import Token
 from rest_framework.filters import SearchFilter
@@ -37,10 +36,12 @@ def user_token(request):
         token, e = Token.objects.get_or_create(user=request.user)
         return redirect(
             'https://photo-market.acceleratorpracticum.ru/sign-in/?token='
-            + token.key)
+            + token.key
+        )
     else:
         return redirect(
-            'https://photo-market.acceleratorpracticum.ru/sign-in/?error=true')
+            'https://photo-market.acceleratorpracticum.ru/sign-in/?error=true'
+        )
 
 
 def index(request):
@@ -53,21 +54,37 @@ def index(request):
 
 
 class UserViewSet(DjoserUserViewSet):
+    #    queryset = User.objects.all()
     pagination_class = LimitPageNumberPagination
-    filter_backends = [DjangoFilterBackend, SearchFilter]
     search_fields = ['^first_name', '^last_name']
     filterset_class = UsersFilter
+    filter_backends = [DjangoFilterBackend, SearchFilter]
 
     def get_queryset(self):
         queryset = User.objects.all()
-        is_photographer = self.request.query_params.get('is_photographer')
-        is_video_operator = self.request.query_params.get('is_video_operator')
-        if is_photographer is not None:
-            queryset = User.objects.filter(is_photographer=True)
-            return queryset
-        elif is_video_operator is not None:
-            queryset = User.objects.filter(is_video_operator=True)
-            return queryset
+        # is_photographer = self.request.query_params.get('is_photographer')
+        # is_video_operator = self.request.
+        # query_params.get('is_video_operator')
+        spec = self.request.query_params.get('spec')
+        min_cost = self.request.query_params.get('min_cost')
+        max_cost = self.request.query_params.get('max_cost')
+        # if is_photographer is not None:
+        #     queryset = User.objects.filter(is_photographer=True)
+        # if is_video_operator is not None:
+        #     queryset = User.objects.filter(is_video_operator=True)
+        if spec is not None:
+            if spec == 'photographer':
+                queryset = User.objects.filter(is_photographer=True)
+            if spec == 'videographer':
+                queryset = User.objects.filter(is_video_operator=True)
+            else:
+                queryset = User.objects.filter(
+                    is_video_operator=True
+                ) | User.objects.filter(is_photographer=True)
+        if min_cost is not None:
+            queryset = queryset.order_by('services__cost_service')
+        if max_cost is not None:
+            queryset = queryset.order_by('-services__cost_service')
         return queryset
 
 
