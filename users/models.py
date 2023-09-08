@@ -6,6 +6,7 @@ from django.contrib.auth.models import (
 )
 from django.db import models
 from phone_field import PhoneField
+from .generation_password import generation_password
 
 
 class AccountManager(BaseUserManager):
@@ -13,8 +14,8 @@ class AccountManager(BaseUserManager):
         self,
         email,
         first_name='default',
-        last_name='defaul',
-        password=None,
+        last_name='default',
+        password=generation_password(),
         is_client=True,
     ):
         user = self.model(

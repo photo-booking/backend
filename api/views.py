@@ -1,9 +1,13 @@
 from django.shortcuts import redirect, render
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet as DjoserUserViewSet
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.authtoken.models import Token
 from rest_framework.filters import SearchFilter
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from djoser.compat import get_user_email
+from djoser.conf import settings
 
 from api.paginators import (
     CatalogPagination,
@@ -86,6 +90,21 @@ class UserViewSet(DjoserUserViewSet):
         if max_cost is not None:
             queryset = queryset.order_by('-services__cost_service')
         return queryset
+
+    @action(['get', 'post'], detail=False)
+    def reset_password(self, request, *args, **kwargs):
+        if request.method == 'GET':
+            return self.retrieve(request, *args, **kwargs)
+        elif request.method == 'POST':
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            user = serializer.get_user()
+            if user:
+                context = {'user': user}
+                to = [get_user_email(user)]
+                settings.EMAIL.password_reset(self.request, context).send(to)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class MediafileViewSet(viewsets.ModelViewSet):
