@@ -63,7 +63,6 @@ class UserViewSet(DjoserUserViewSet):
     search_fields = ['^first_name', '^last_name']
     filterset_class = UsersFilter
     filter_backends = [DjangoFilterBackend, SearchFilter]
-    filterset_fields = ()
 
     def get_queryset(self):
         queryset = User.objects.all()
