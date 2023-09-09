@@ -58,11 +58,11 @@ def index(request):
 
 
 class UserViewSet(DjoserUserViewSet):
-    #    queryset = User.objects.all()
     pagination_class = LimitPageNumberPagination
     search_fields = ['^first_name', '^last_name']
     filterset_class = UsersFilter
     filter_backends = [DjangoFilterBackend, SearchFilter]
+    lookup_field = 'id'
 
     def get_queryset(self):
         queryset = User.objects.all()
