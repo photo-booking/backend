@@ -14,9 +14,6 @@ class СontractorFilter(SearchFilter):
 
 
 class UsersFilter(django_filters.FilterSet):
-    # is_photographer = django_filters.BooleanFilter(
-    #     method='filter_is_photographer'
-    # )
     spec = django_filters.BooleanFilter(
         method='filter_spec',
         label='укажите photographer или videographer или all',
@@ -27,12 +24,13 @@ class UsersFilter(django_filters.FilterSet):
     min_cost = django_filters.BooleanFilter(
         method='filter_min_cost', label='укажите min_cost bool'
     )
-    # is_video_operator = django_filters.BooleanFilter(
-    #     method='filter_is_video_operator'
-    # )
-    # tags = django_filters.AllValuesMultipleFilter(
-    #     field_name='services__name_service'
-    # )
+    minCost = django_filters.BooleanFilter(
+        method='filter_minCost',
+        label='укажите minCost int',
+    )
+    maxCost = django_filters.BooleanFilter(
+        method='filter_maxCost', label='укажите maxCost int'
+    )
     user__services = django_filters.CharFilter(
         field_name='services__name_service',
         lookup_expr='contains',
@@ -42,25 +40,13 @@ class UsersFilter(django_filters.FilterSet):
     class Meta:
         model = User
         fields = (
-            #            'tags',
             'user__services',
-            # 'is_photographer',
-            # 'is_video_operator',
             'spec',
             'max_cost',
             'max_cost',
+            'minCost',
+            'maxCost',
         )
-
-    # def filter_is_photographer(self, queryset, name, value):
-    #     if value:
-    #         return queryset.filter(is_photographer=
-    # True).values_list('user__id', flat=True)
-    #     return queryset
-
-    # def filter_is_video_operator(self, queryset, name, value):
-    #     if value and self.request.user.is_authenticated:
-    #         return queryset.filter(is_video_operator=True)
-    #     return queryset
 
     def filter_spec(self, queryset, name, value):
         if value and self.request.user.is_authenticated:
@@ -78,3 +64,21 @@ class UsersFilter(django_filters.FilterSet):
         if value and self.request.user.is_authenticated:
             queryset = queryset.order_by('-services__cost_service')
             return queryset
+
+    def filter_minCost(self, queryset, name, value):
+        if value:
+            return queryset.filter(
+                services__cost_service__range=(
+                    self.kwargs['minCost'],
+                    self.kwargs['maxCost'],
+                )
+            )
+
+    def filter_maxCost(self, queryset, name, value):
+        if value:
+            return queryset.filter(
+                services__cost_service__range=(
+                    self.kwargs['minCost'],
+                    self.kwargs['maxCost'],
+                )
+            )

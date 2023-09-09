@@ -20,6 +20,7 @@ class Base64ImageField(serializers.ImageField):
 
 class TagsSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Tag."""
+
     class Meta:
         model = Tag
         fields = ('name', 'slug')
@@ -28,7 +29,11 @@ class TagsSerializer(serializers.ModelSerializer):
 class ShortUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name', 'profile_photo', 'email')
+        fields = (
+            'id',
+            'first_name',
+            'last_name',
+        )
 
 
 class ServiceSerializer(serializers.ModelSerializer):
