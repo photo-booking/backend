@@ -45,10 +45,8 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 # CORS domains
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:8000',
-    'http://backend:8000'
-]
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_URLS_REGEX = r'^/api/.*$'
 
 AUTH_USER_MODEL = 'users.User'
 
@@ -214,6 +212,7 @@ NO_REGISTER_USERNAME = 'me'
 # DJOSER
 
 DJOSER = {
+    'PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND': True,
     'PASSWORD_RESET_CONFIRM_URL': 'api/users/reset_password_confirm/{uid}/{token}',
     'PASSWORD_CHANGED_EMAIL_CONFIRMATION': True,
     'HIDE_USERS': False,
@@ -225,6 +224,9 @@ DJOSER = {
         'current_user': 'api.serializers.UserSerializer',
         'user': 'api.serializers.UserSerializer',
         'user_list': 'api.serializers.UserSerializer',
+        'password_reset': 'api.serializers.CustomSendEmailResetSerializer',
+        'user_create': 'api.serializers.CustomUserCreateSerializer',
+        'token_create': 'api.serializers.CustomTokenCreateSerializer',
     },
 }
 

@@ -2,6 +2,12 @@ import base64
 
 from django.core.files.base import ContentFile
 from rest_framework import serializers
+from djoser.serializers import (
+    SendEmailResetSerializer,
+    TokenCreateSerializer,
+    UserCreateSerializer,
+
+)
 
 from orders.models import Chat, Message, Order, Raiting
 from properties.models import FeedbackProperty, Property, Room
@@ -23,13 +29,17 @@ class TagsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Tag
-        fields = '__all__'
+        fields = ('name', 'slug')
 
 
 class ShortUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name', 'profile_photo', 'email')
+        fields = (
+            'id',
+            'first_name',
+            'last_name',
+        )
 
 
 class ServiceSerializer(serializers.ModelSerializer):
@@ -255,3 +265,24 @@ class RaitingSerializer(serializers.ModelSerializer):
             'user',
             'raiting',
         )
+
+
+class CustomSendEmailResetSerializer(SendEmailResetSerializer):
+    default_error_messages = {
+        'email_not_found': 'Аккаунта с такой электронной почтой не существует'
+    }
+
+
+class CustomTokenCreateSerializer(TokenCreateSerializer):
+    default_error_messages = {
+        'invalid_credentials': 'Проверьте корректность ввода почты и пароля',
+        'inactive_account': 'Этот аккаунт неактивен, \
+        обратитесь в форму обратной связи',
+    }
+
+
+class CustomUserCreateSerializer(UserCreateSerializer):
+    default_error_messages = {
+        "cannot_create_user": 'Мы не можем создать пользователя, \
+        обратитесь в форму обратной связи'
+    }

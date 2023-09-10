@@ -1,9 +1,13 @@
 from django.shortcuts import redirect, render
 from django_filters.rest_framework import DjangoFilterBackend
+from djoser.compat import get_user_email
+from djoser.conf import settings
 from djoser.views import UserViewSet as DjoserUserViewSet
-from rest_framework import viewsets
+from rest_framework import status, viewsets
 from rest_framework.authtoken.models import Token
+from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
+from rest_framework.response import Response
 
 from api.paginators import (
     CatalogPagination,
@@ -54,38 +58,52 @@ def index(request):
 
 
 class UserViewSet(DjoserUserViewSet):
-    #    queryset = User.objects.all()
     pagination_class = LimitPageNumberPagination
     search_fields = ['^first_name', '^last_name']
     filterset_class = UsersFilter
     filter_backends = [DjangoFilterBackend, SearchFilter]
+    lookup_field = 'id'
 
     def get_queryset(self):
         queryset = User.objects.all()
-        # is_photographer = self.request.query_params.get('is_photographer')
-        # is_video_operator = self.request.
-        # query_params.get('is_video_operator')
         spec = self.request.query_params.get('spec')
         min_cost = self.request.query_params.get('min_cost')
         max_cost = self.request.query_params.get('max_cost')
-        # if is_photographer is not None:
-        #     queryset = User.objects.filter(is_photographer=True)
-        # if is_video_operator is not None:
-        #     queryset = User.objects.filter(is_video_operator=True)
+        maxCost = self.request.query_params.get('maxCost')
+        minCost = self.request.query_params.get('minCost')
         if spec is not None:
             if spec == 'photographer':
-                queryset = User.objects.filter(is_photographer=True)
+                queryset = queryset.filter(is_photographer=True)
             if spec == 'videographer':
-                queryset = User.objects.filter(is_video_operator=True)
+                queryset = queryset.filter(is_video_operator=True)
             else:
-                queryset = User.objects.filter(
+                queryset = queryset.filter(
                     is_video_operator=True
-                ) | User.objects.filter(is_photographer=True)
+                ) | queryset.filter(is_photographer=True)
         if min_cost is not None:
             queryset = queryset.order_by('services__cost_service')
         if max_cost is not None:
             queryset = queryset.order_by('-services__cost_service')
+        if minCost is not None:
+            queryset = queryset.filter(
+                services__cost_service__range=(minCost, maxCost)
+            )
         return queryset
+
+    @action(['get', 'post'], detail=False)
+    def reset_password(self, request, *args, **kwargs):
+        if request.method == 'GET':
+            return self.retrieve(request, *args, **kwargs)
+        elif request.method == 'POST':
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            user = serializer.get_user()
+            if user:
+                context = {'user': user}
+                to = [get_user_email(user)]
+                settings.EMAIL.password_reset(self.request, context).send(to)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class MediafileViewSet(viewsets.ModelViewSet):
