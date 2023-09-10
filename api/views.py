@@ -62,7 +62,6 @@ class UserViewSet(DjoserUserViewSet):
     search_fields = ['^first_name', '^last_name']
     filterset_class = UsersFilter
     filter_backends = [DjangoFilterBackend, SearchFilter]
-    lookup_field = 'id'
 
     def get_queryset(self):
         queryset = User.objects.all()
@@ -90,10 +89,10 @@ class UserViewSet(DjoserUserViewSet):
             )
         return queryset
 
-    @action(['get', 'post'], detail=False)
+    @action(['POST', 'GET'], detail=False)
     def reset_password(self, request, *args, **kwargs):
         if request.method == 'GET':
-            return self.retrieve(request, *args, **kwargs)
+            return self.list(request, *args, **kwargs)
         elif request.method == 'POST':
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid(raise_exception=True)

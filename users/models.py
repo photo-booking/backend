@@ -66,7 +66,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         blank=True,
     )
     email = models.EmailField(
-        verbose_name='Почта для регистрации', unique=True
+        verbose_name='Почта для регистрации',
+        error_messages={
+            "unique": "Пользователь с такой почтой уже зарегистрирован",
+        },
+        unique=True
     )
     contact_email = models.EmailField(
         verbose_name='Почта для связи', blank=True, null=True
