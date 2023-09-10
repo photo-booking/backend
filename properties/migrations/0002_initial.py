@@ -10,43 +10,42 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("chat", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ("properties", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name="room",
-            name="current_users",
-            field=models.ManyToManyField(
-                blank=True, related_name="current_rooms", to=settings.AUTH_USER_MODEL
-            ),
-        ),
-        migrations.AddField(
-            model_name="room",
-            name="host",
-            field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE,
-                related_name="rooms",
-                to=settings.AUTH_USER_MODEL,
-            ),
-        ),
-        migrations.AddField(
-            model_name="message",
-            name="room",
-            field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE,
-                related_name="messages",
-                to="chat.room",
-            ),
-        ),
-        migrations.AddField(
-            model_name="message",
+            model_name="property",
             name="user",
             field=models.ForeignKey(
+                null=True,
                 on_delete=django.db.models.deletion.CASCADE,
-                related_name="messages",
+                related_name="properties",
                 to=settings.AUTH_USER_MODEL,
+                verbose_name="Владелец недвижимости",
+            ),
+        ),
+        migrations.AddField(
+            model_name="feedbackproperty",
+            name="property",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="feedback_properties",
+                to="properties.property",
+                verbose_name="Название недвижимости",
+            ),
+        ),
+        migrations.AddField(
+            model_name="feedbackproperty",
+            name="user_client",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="feedback_properties",
+                to=settings.AUTH_USER_MODEL,
+                verbose_name="Клиент",
             ),
         ),
     ]
