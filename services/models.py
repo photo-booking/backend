@@ -100,7 +100,7 @@ class MediaFile(models.Model):
         )
 
     def save(self, *args, **kwargs):
-        if self.image:
+        if self.photo:
             self.media_type = MediaFile.MediaType.PHOTO.value
         else:
             self.media_type = MediaFile.MediaType.VIDEO.value
