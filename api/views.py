@@ -58,7 +58,6 @@ def index(request):
 
 
 class UserViewSet(DjoserUserViewSet):
-    #    queryset = User.objects.all()
     pagination_class = LimitPageNumberPagination
     search_fields = ['^first_name', '^last_name']
     filterset_class = UsersFilter
@@ -90,10 +89,10 @@ class UserViewSet(DjoserUserViewSet):
             )
         return queryset
 
-    @action(['get', 'post'], detail=False)
+    @action(['POST', 'GET'], detail=False)
     def reset_password(self, request, *args, **kwargs):
         if request.method == 'GET':
-            return self.retrieve(request, *args, **kwargs)
+            return self.list(request, *args, **kwargs)
         elif request.method == 'POST':
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid(raise_exception=True)

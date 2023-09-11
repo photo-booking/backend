@@ -1,7 +1,12 @@
 import base64
 
 from django.core.files.base import ContentFile
-from rest_framework import serializers
+from djoser.serializers import (
+    SendEmailResetSerializer,
+    TokenCreateSerializer,
+    UserCreateSerializer,
+)
+from rest_framework import serializers, status
 
 from orders.models import Chat, Message, Order, Raiting
 from properties.models import FeedbackProperty, Property, Room
@@ -63,16 +68,50 @@ class ServiceSerializer(serializers.ModelSerializer):
 
 class MediafileSerializer(serializers.ModelSerializer):
     authors = serializers.SerializerMethodField()
+    photo = Base64ImageField(allow_null=True)
 
     class Meta:
         model = MediaFile
         fields = (
             'authors',
+            'photo',
             'link',
             'title',
             'media_type',
             'is_main_photo',
         )
+        read_only_fields = ('media_type',)
+
+    def create(self, validated_data):
+        authors = validated_data.get('authors')
+        title = validated_data.get('title')
+        image = validated_data.get('image')
+        link = validated_data.get('link')
+        is_main_photo = validated_data.get('is_main_photo')
+        media_type = (
+            MediaFile.MediaType.PHOTO.value
+            if image
+            else MediaFile.MediaType.VIDEO.value
+        )
+        media_file = MediaFile.objects.create(
+            authors=authors,
+            title=title,
+            image=image,
+            link=link,
+            media_type=media_type,
+            is_main_photo=is_main_photo,
+        )
+        return media_file
+
+    def validate(self, attrs):
+        image = attrs.get('image')
+        video_link = attrs.get('link')
+        if (image and video_link) or (not image and not video_link):
+            raise serializers.ValidationError(
+                detail='Укажите либо файл фотографии либо ссылку на видео',
+                code=status.HTTP_400_BAD_REQUEST,
+            )
+        return super().validate(attrs)
 
     def get_authors(self, media, *args, **kwargs):
         authors = media.author
@@ -259,3 +298,24 @@ class RaitingSerializer(serializers.ModelSerializer):
             'user',
             'raiting',
         )
+
+
+class CustomSendEmailResetSerializer(SendEmailResetSerializer):
+    default_error_messages = {
+        'email_not_found': 'Аккаунта с такой электронной почтой не существует'
+    }
+
+
+class CustomTokenCreateSerializer(TokenCreateSerializer):
+    default_error_messages = {
+        'invalid_credentials': 'Проверьте корректность ввода почты и пароля',
+        'inactive_account': 'Этот аккаунт неактивен, \
+        обратитесь в форму обратной связи',
+    }
+
+
+class CustomUserCreateSerializer(UserCreateSerializer):
+    default_error_messages = {
+        "cannot_create_user": 'Мы не можем создать пользователя, \
+        обратитесь в форму обратной связи'
+    }

@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models import enums
 
 
 class Tag(models.Model):
@@ -59,18 +60,30 @@ class Service(models.Model):
 
 
 class MediaFile(models.Model):
+    class MediaType(enums.Choices):
+        VIDEO = 'VIDEO'
+        PHOTO = 'PHOTO'
+
+        @classmethod
+        def choices(cls):
+            return [(key.name, key.value) for key in cls]
+
     author = models.ForeignKey(
         'users.User',
         verbose_name='Автор',
         on_delete=models.CASCADE,
         related_name='mediafiles',
     )
-    link = models.URLField(verbose_name='Ссылка на медиа файл')
+    link = models.URLField(verbose_name='Ссылка на видео', blank=True)
     title = models.CharField(
         verbose_name='Название', max_length=settings.MAX_LEN_NAME
     )
+    photo = models.ImageField(
+        verbose_name='Фотография', upload_to='users/photos', blank=True
+    )
     media_type = models.CharField(
-        verbose_name='Тип медиа файла', max_length=settings.MAX_LEN_NAME
+        verbose_name='Тип медиа файла',
+        choices=MediaType.choices,
     )
     is_main_photo = models.BooleanField(
         verbose_name='Отображение файла на главной'
@@ -79,6 +92,19 @@ class MediaFile(models.Model):
     class Meta:
         verbose_name = 'Медиа файл'
         verbose_name_plural = 'Медиа файлы'
+        constraints = (
+            models.CheckConstraint(
+                check=models.Q(photo__exact='') | models.Q(link__exact=''),
+                name='Укажите только один вид медиа',
+            ),
+        )
+
+    def save(self, *args, **kwargs):
+        if self.photo:
+            self.media_type = MediaFile.MediaType.PHOTO.value
+        else:
+            self.media_type = MediaFile.MediaType.VIDEO.value
+        super(MediaFile, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.title
