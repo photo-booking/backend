@@ -41,6 +41,31 @@ class ShortUserSerializer(serializers.ModelSerializer):
         )
 
 
+class CountUserSerializer(serializers.Serializer):
+    total_spec_user = serializers.SerializerMethodField()
+    photo_user = serializers.SerializerMethodField()
+    video_user = serializers.SerializerMethodField()
+
+    class Meta:
+        fields = (
+            'total_spec_user',
+            'photo_user',
+            'video_user',
+        )
+
+    def get_total_spec_user(self, services, *args, **kwargs):
+        users = User.objects.filter(
+            is_photographer=True
+        ) | User.objects.filter(is_video_operator=True)
+        return users.count()
+
+    def get_photo_user(self, services, *args, **kwargs):
+        return User.objects.filter(is_photographer=True).count()
+
+    def get_video_user(self, services, *args, **kwargs):
+        return User.objects.filter(is_video_operator=True).count()
+
+
 class ServiceSerializer(serializers.ModelSerializer):
     image_service = Base64ImageField(required=False, allow_null=True)
     tag = TagsSerializer(read_only=True, many=True)
