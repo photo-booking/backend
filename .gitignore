@@ -164,3 +164,8 @@ cython_debug/
 
 # Media
 media/
+frontend-one/
+.frontend-one/
+./frontend-one/
+.frontend-one/node_modules
+./frontend-one/node_modules
