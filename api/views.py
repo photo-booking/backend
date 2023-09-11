@@ -7,8 +7,6 @@ from rest_framework import status, viewsets
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action, api_view
 from rest_framework.filters import SearchFilter
-from rest_framework.generics import ListAPIView
-from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from api.paginators import (
@@ -169,12 +167,6 @@ class OrderViewSet(viewsets.ModelViewSet):
 class RaitingViewSet(viewsets.ModelViewSet):
     queryset = Raiting.objects.all()
     serializer_class = RaitingSerializer
-
-
-class SpecialistCountView(ListAPIView):
-    permission_classes = (AllowAny,)
-    serializer_class = CountUserSerializer
-    pagination_class = LimitPageNumberPagination
 
 
 @api_view(['GET'])
