@@ -1,10 +1,11 @@
+from django.contrib.auth import views as auth_views
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
-from django.contrib.auth import views as auth_views
 
 from .views import (
     ChatViewSet,
     FBpropertyViewSet,
+    GeneralCatalogExecutorCardViewSet,
     MediafileViewSet,
     MessageViewSet,
     OrderViewSet,
@@ -13,9 +14,9 @@ from .views import (
     RoomViewSet,
     ServiceViewSet,
     UserViewSet,
+    count_user,
     index,
     user_token,
-    GeneralCatalogExecutorCardViewSet
 )
 
 app_name = 'api'
@@ -34,6 +35,7 @@ router_v1.register('media_files', MediafileViewSet, 'media_files')
 router_v1.register('raitings', RaitingViewSet, 'raitings')
 
 urlpatterns = (
+    path('users/count/', count_user, name='count_user'),
     path('', include(router_v1.urls)),
     path('auth/', include('djoser.urls.authtoken')),
     path('social/', include('social_django.urls', namespace='social')),
