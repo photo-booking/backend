@@ -28,7 +28,6 @@ class Migration(migrations.Migration):
             field=models.CharField(
                 choices=[("VIDEO", "Video"), ("PHOTO", "Photo")],
                 verbose_name="Тип медиа файла",
-                max_length=25,
             ),
         ),
         migrations.AddConstraint(
