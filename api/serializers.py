@@ -245,6 +245,23 @@ class GeneralCatalogExecutorCardSerializer(serializers.ModelSerializer):
         return selection
 
 
+class ShortServiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Service
+        fields = (
+            'name_service',
+        )
+
+
+class GeneralCatalogSorting(serializers.Serializer):
+    expert = serializers.CharField(max_length=200)
+    isMaxCost = serializers.BooleanField()
+    isMinCost = serializers.BooleanField()
+    maxCost = serializers.CharField(max_length=250)
+    minCost = serializers.CharField(max_length=250)
+    typeOfShooting = ShortServiceSerializer(many=True, read_only=True)
+
+
 class ChatSerializer(serializers.ModelSerializer):
     users = serializers.StringRelatedField(read_only=True, many=True)
 
