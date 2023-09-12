@@ -136,17 +136,60 @@ class ServiceViewSet(viewsets.ModelViewSet):
 
 
 class GeneralCatalogExecutorCardViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.exclude(is_client=True)
+    # queryset = User.objects.exclude(is_client=True)
     serializer_class = GeneralCatalogExecutorCardSerializer
     pagination_class = CatalogPagination
-    filter_backends = [
-        DjangoFilterBackend,
-    ]
-    filterset_class = CatalogFilter
-    ordering_fields = ['services__cost_service']
-    http_method_names = [
-        'get',
-    ]
+    # filter_backends = [
+    #     DjangoFilterBackend,
+    # ]
+    # filterset_class = CatalogFilter
+    # ordering_fields = ['services__cost_service']
+    # http_method_names = [
+    #     'get',
+    # ]
+
+    def get_queryset(self):
+        type_of_shooting = {
+            'aerial': 'aerial',
+            'clips': 'clips',
+            'family': 'family',
+            'fashion': 'fashion',
+            'individual': 'individual',
+            'interview': 'interview',
+            'lovestory': 'lovestory',
+            'pets': 'pets',
+            'stock': 'stock',
+            'wedding': 'wedding',
+        }
+
+        serializer = self.get_serializer(data=self.request.data)
+        queryset = User.objects.exclude(is_client=True)
+
+        for param, value in serializer.initial_data.items():
+            if param == 'expert':
+                if value == 'photographer':
+                    queryset = queryset.filter(is_photographer=True)
+                elif value == 'video_operator':
+                    queryset = queryset.filter(is_video_operator=True)
+
+            if param == 'maxCost':
+                queryset = queryset.filter(services__cost_service__lte=value)
+
+            if param == 'minCost':
+                queryset = queryset.filter(services__cost_service__gte=value)
+
+            if param == 'isMaxCost' and value == 'True':
+                queryset = queryset.order_by('-services__cost_service')
+
+            if param == 'isMinCost' and value == 'True':
+                queryset = queryset.order_by('services__cost_service')
+
+            if param == 'typeOfShooting' and value:
+                for type_, bool_ in value.items():
+                    if type_ in type_of_shooting and bool_ == 'True':
+                        queryset = queryset.filter(services__name_service=type_)
+
+        return queryset
 
 
 class ChatViewSet(viewsets.ModelViewSet):

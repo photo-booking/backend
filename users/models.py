@@ -137,3 +137,11 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+    @property
+    def min_cost(self):
+        return self.services.order_by('cost_service')[0].cost_service
+
+    @property
+    def max_cost(self):
+        return self.services.order_by('-cost_service')[0].cost_service
