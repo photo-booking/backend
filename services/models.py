@@ -84,6 +84,7 @@ class MediaFile(models.Model):
     media_type = models.CharField(
         verbose_name='Тип медиа файла',
         choices=MediaType.choices,
+        max_length=settings.MAX_LEN_NAME,
     )
     is_main_photo = models.BooleanField(
         verbose_name='Отображение файла на главной'
