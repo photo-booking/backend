@@ -1,3 +1,4 @@
+import logging
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.compat import get_user_email
 from djoser.conf import settings
@@ -35,6 +36,11 @@ from .serializers import (
     ServiceSerializer,
     SocialUserSerializer,
 )
+
+
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO)
 
 
 class UserViewSet(DjoserUserViewSet):
@@ -75,14 +81,18 @@ class UserViewSet(DjoserUserViewSet):
             return self.list(request, *args, **kwargs)
         elif request.method == 'POST':
             serializer = self.get_serializer(data=request.data)
+            logging.info(f'value serializer {serializer}')
             serializer.is_valid(raise_exception=True)
-            user = serializer.get_user()
-            if user:
-                context = {'user': user}
-                to = [get_user_email(user)]
-                settings.EMAIL.password_reset(self.request, context).send(to)
-
-        return Response(status=status.HTTP_204_NO_CONTENT)
+            try:
+                user = serializer.get_user()
+                logging.info(f'user serializer {user}')
+                if user:
+                    context = {'user': user}
+                    to = [get_user_email(user)]
+                    settings.EMAIL.password_reset(self.request, context).send(to)
+                    return Response(status=status.HTTP_200_OK)
+            except Exception:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class MediafileViewSet(viewsets.ModelViewSet):
@@ -198,10 +208,12 @@ def user_token(user):
 @permission_classes([AllowAny])
 def get_token_user_from_google(request):
     serializer = SocialUserSerializer(data=request.data)
+    logging.info(f'serialier data: {serializer.initial_data}')
     serializer.is_valid(raise_exception=True)
     token = serializer.initial_data.get('token')
     try:
         user = create_google_user(token)
+        logging.info(f'user created - {user.email}')
         token_bd = user_token(user[0])
         return Response(
             status=status.HTTP_200_OK, data={'token:': {token_bd}}
