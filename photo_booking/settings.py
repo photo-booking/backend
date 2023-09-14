@@ -217,8 +217,8 @@ DJOSER = {
     'PASSWORD_CHANGED_EMAIL_CONFIRMATION': True,
     'HIDE_USERS': False,
     'PERMISSIONS': {
-        'user': ('api.permissions.AdminOrReadOnly',),
-        'user_list': ('api.permissions.AdminOrReadOnly',),
+        'user': ('api.permissions.SuperUserOrReadOnly',),
+        'user_list': ('api.permissions.SuperUserOrReadOnly',),
     },
     'SERIALIZERS': {
         'current_user': 'api.serializers.UserSerializer',
@@ -232,7 +232,6 @@ DJOSER = {
 
 # SOCIAL OAUTH2:
 SOCIAL_AUTH_URL_NAMESPACE = 'api:social'
-LOGIN_URL = 'api/auth/login/google-oauth2/'
 LOGIN_REDIRECT_URL = '/api/user_token/'
 LOGOUT_REDIRECT_URL = '/api/main/'
 

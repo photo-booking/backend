@@ -1,22 +1,22 @@
-from django.shortcuts import redirect, render
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.compat import get_user_email
 from djoser.conf import settings
 from djoser.views import UserViewSet as DjoserUserViewSet
 from rest_framework import status, viewsets
-from rest_framework.authtoken.models import Token
-from rest_framework.decorators import action, api_view
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
+from rest_framework.authtoken.models import Token
 
 from api.paginators import (
     CatalogPagination,
     LimitPageNumberPagination,
     PortfolioLimitPageNumberPagination,
 )
+from api.action_social import create_google_user, create_vk_user
 from orders.models import Chat, Message, Order, Raiting
 from properties.models import FeedbackProperty, Property, Room
-from services.filters import CatalogFilter
 from services.models import MediaFile, Service
 from users.models import User
 
@@ -33,29 +33,8 @@ from .serializers import (
     RaitingSerializer,
     RoomSerializer,
     ServiceSerializer,
+    SocialUserSerializer,
 )
-
-
-def user_token(request):
-    if request.user.is_authenticated:
-        token, e = Token.objects.get_or_create(user=request.user)
-        return redirect(
-            'https://photo-market.acceleratorpracticum.ru/sign-in/?token='
-            + token.key
-        )
-    else:
-        return redirect(
-            'https://photo-market.acceleratorpracticum.ru/sign-in/?error=true'
-        )
-
-
-def index(request):
-    context = {
-        'users': User.objects.order_by('email')
-        if request.user.is_authenticated
-        else []
-    }
-    return render(request, 'index.html', context)
 
 
 class UserViewSet(DjoserUserViewSet):
@@ -136,17 +115,8 @@ class ServiceViewSet(viewsets.ModelViewSet):
 
 
 class GeneralCatalogExecutorCardViewSet(viewsets.ModelViewSet):
-    # queryset = User.objects.exclude(is_client=True)
     serializer_class = GeneralCatalogExecutorCardSerializer
     pagination_class = CatalogPagination
-    # filter_backends = [
-    #     DjangoFilterBackend,
-    # ]
-    # filterset_class = CatalogFilter
-    # ordering_fields = ['services__cost_service']
-    # http_method_names = [
-    #     'get',
-    # ]
 
     def get_queryset(self):
         type_of_shooting = {
@@ -187,7 +157,9 @@ class GeneralCatalogExecutorCardViewSet(viewsets.ModelViewSet):
             if param == 'typeOfShooting' and value:
                 for type_, bool_ in value.items():
                     if type_ in type_of_shooting and bool_ == 'True':
-                        queryset = queryset.filter(services__name_service=type_)
+                        queryset = queryset.filter(
+                            services__name_service=type_
+                        )
 
         return queryset
 
@@ -215,3 +187,40 @@ class RaitingViewSet(viewsets.ModelViewSet):
 @api_view(['GET'])
 def count_user(request):
     return Response(CountUserSerializer(request).data)
+
+
+def user_token(user):
+    token, _ = Token.objects.get_or_create(user=user)
+    return token.key
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def get_token_user_from_google(request):
+    serializer = SocialUserSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    token = serializer.initial_data.get('token')
+    try:
+        user = create_google_user(token)
+        token_bd = user_token(user[0])
+        return Response(
+            status=status.HTTP_200_OK, data={'token:': {token_bd}}
+        )
+    except Exception:
+        return Response(status=status.HTTP_502_BAD_GATEWAY)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def get_token_from_vk_user(request):
+    serializer = SocialUserSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    code = serializer.initial_data.get('code')
+    try:
+        user = create_vk_user(code)
+        token_bd = user_token(user[0])
+        return Response(
+            status=status.HTTP_200_OK, data={'token:': {token_bd}}
+        )
+    except Exception:
+        return Response(status=status.HTTP_502_BAD_GATEWAY)
