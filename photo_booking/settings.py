@@ -101,8 +101,6 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "social_django.context_processors.backends",
-                "social_django.context_processors.login_redirect",
             ],
         },
     },
@@ -207,7 +205,6 @@ MAX_EMAIL_NAME_LENGTH = 40
 MAX_LEN_ABOUT_ME = 150
 MAX_LEN_NAME = 25
 MAX_TEXT_LEN = 500
-NO_REGISTER_USERNAME = 'me'
 
 # DJOSER
 
@@ -231,43 +228,12 @@ DJOSER = {
 }
 
 # SOCIAL OAUTH2:
-SOCIAL_AUTH_URL_NAMESPACE = 'api:social'
-LOGIN_REDIRECT_URL = '/api/user_token/'
-LOGOUT_REDIRECT_URL = '/api/main/'
-
-AUTHENTICATION_BACKENDS = (
-    'social_core.backends.google.GoogleOAuth2',
-    'social_core.backends.vk.VKOAuth2',
-    'django.contrib.auth.backends.ModelBackend',
-)
-
 # Google
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('GOOGLE_CLIENT_ID')
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
-SOCIAL_AUTH_GOOGLE_OAUTH2_IGNORE_DEFAULT_SCOPE = True
-SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
-    'https://www.googleapis.com/auth/userinfo.email',
-    'https://www.googleapis.com/auth/userinfo.profile',
-]
-
 # Vkontakte
 SOCIAL_AUTH_VK_OAUTH2_KEY = os.getenv('VK_APP_ID')
 SOCIAL_AUTH_VK_OAUTH2_SECRET = os.getenv('VK_API_SECRET')
-SOCIAL_AUTH_VK_OAUTH2_SCOPE = [
-    'email',
-]
-
-SOCIAL_AUTH_PIPELINE = (
-    'social_core.pipeline.social_auth.social_details',
-    'social_core.pipeline.social_auth.social_uid',
-    'social_core.pipeline.social_auth.auth_allowed',
-    'social_core.pipeline.social_auth.social_user',
-    'social_core.pipeline.social_auth.associate_by_email',
-    'social_core.pipeline.user.create_user',
-    'social_core.pipeline.social_auth.associate_user',
-    'social_core.pipeline.social_auth.load_extra_data',
-    'social_core.pipeline.user.user_details',
-)
 
 # Отправка писем для восстановления пароля smtp
 EMAIL_USE_TLS = True
