@@ -63,7 +63,6 @@ INSTALLED_APPS = [
     'corsheaders',
     'channels',
     'rest_framework',
-    'social_django',
     'rest_framework.authtoken',
     'django_filters',
     'djoser',
