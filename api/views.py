@@ -92,6 +92,7 @@ class UserViewSet(DjoserUserViewSet):
                     settings.EMAIL.password_reset(self.request, context).send(to)
                     return Response(status=status.HTTP_200_OK)
             except Exception:
+                logging.CRITICAL(f'{Exception}')
                 return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -210,7 +211,7 @@ def get_token_user_from_google(request):
     serializer = SocialUserSerializer(data=request.data)
     logging.info(f'serialier data: {serializer.initial_data}')
     serializer.is_valid(raise_exception=True)
-    token = serializer.initial_data.get('token')
+    token = serializer.initial_data.get('eccses_token')
     try:
         user = create_google_user(token)
         logging.info(f'user created - {user.email}')
@@ -219,6 +220,7 @@ def get_token_user_from_google(request):
             status=status.HTTP_200_OK, data={'token:': {token_bd}}
         )
     except Exception:
+        logging.CRITICAL(f'{Exception}')
         return Response(status=status.HTTP_502_BAD_GATEWAY)
 
 
