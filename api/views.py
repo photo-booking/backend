@@ -202,6 +202,7 @@ def count_user(request):
 
 def user_token(user):
     token, _ = Token.objects.get_or_create(user=user)
+    logging.info(f'user toke: {token.key}')
     return token.key
 
 
@@ -214,7 +215,7 @@ def get_token_user_from_google(request):
     token = serializer.initial_data.get('eccses_token')
     try:
         user = create_google_user(token)
-        logging.info(f'user created - {user.email}')
+        logging.info(f'user created - {user}')
         token_bd = user_token(user[0])
         return Response(
             status=status.HTTP_200_OK, data={'token:': {token_bd}}
@@ -232,9 +233,11 @@ def get_token_from_vk_user(request):
     code = serializer.initial_data.get('code')
     try:
         user = create_vk_user(code)
+        logging.info(f'New user: {user[0]}')
         token_bd = user_token(user[0])
         return Response(
             status=status.HTTP_200_OK, data={'token:': {token_bd}}
         )
     except Exception:
+        logging.CRITICAL(f'Exception {Exception}')
         return Response(status=status.HTTP_502_BAD_GATEWAY)
