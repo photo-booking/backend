@@ -7,6 +7,7 @@ from djoser.serializers import (
     UserCreateSerializer,
 )
 from rest_framework import serializers, status
+from rest_framework.authtoken.models import Token
 
 from orders.models import Chat, Message, Order, Raiting
 from properties.models import FeedbackProperty, Property, Room
@@ -24,8 +25,6 @@ class Base64ImageField(serializers.ImageField):
 
 
 class TagsSerializer(serializers.ModelSerializer):
-    """Сериализатор для модели Tag."""
-
     class Meta:
         model = Tag
         fields = ('name', 'slug')
@@ -146,7 +145,6 @@ class MediafileSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     profile_photo = Base64ImageField(required=False, allow_null=True)
-
     services = serializers.SerializerMethodField()
     mediafiles = serializers.SerializerMethodField()
 
@@ -183,6 +181,16 @@ class UserSerializer(serializers.ModelSerializer):
         services = user.services.all()
         if services is not None:
             return ServiceSerializer(services, many=True).data
+
+
+class SocialUserSerializer(serializers.ModelSerializer):
+    token = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Token
+        fields = (
+            'token',
+        )
 
 
 class PropertySerializer(serializers.ModelSerializer):

@@ -1,4 +1,3 @@
-from django.contrib.auth import views as auth_views
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
@@ -15,8 +14,8 @@ from .views import (
     ServiceViewSet,
     UserViewSet,
     count_user,
-    index,
-    user_token,
+    get_token_user_from_google,
+    get_token_from_vk_user,
 )
 
 app_name = 'api'
@@ -38,8 +37,6 @@ urlpatterns = (
     path('users/count/', count_user, name='count_user'),
     path('', include(router_v1.urls)),
     path('auth/', include('djoser.urls.authtoken')),
-    path('social/', include('social_django.urls', namespace='social')),
-    path('main/', index),
-    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
-    path('user_token/', user_token, name='user_token'),
+    path('social_google/', get_token_user_from_google, name='google'),
+    path('social_vk/', get_token_from_vk_user, name='vk')
 )
