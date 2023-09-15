@@ -236,7 +236,7 @@ def get_token_from_vk_user(request):
         user = create_vk_user(code)
         logging.info(f'New user: {user[0]}')
     except Exception as e:
-        logging.critical(' Error:', exc_info=e)
+        logging.critical('Error:', exc_info=e)
         return Response(status=status.HTTP_502_BAD_GATEWAY)
     else:
         token_bd = user_token(user[0])
