@@ -83,7 +83,8 @@ def create_vk_user(code):
                 is_client=True,
                 password=generation_password())
             return User.objects.filter(email=email)
-        except SystemError:
+        except Exception:
+            logging.CRITICAL(f'Exception - {Exception}')
             return {'error': 'Пользователь не создан'}
     except ValueError:
         return {'error': 'Неверный токен, доступ к аккаунту гугл запрещен'}
