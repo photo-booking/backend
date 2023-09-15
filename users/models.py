@@ -6,6 +6,7 @@ from django.contrib.auth.models import (
 )
 from django.db import models
 from phone_field import PhoneField
+
 from .generation_password import generation_password
 
 
@@ -70,7 +71,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         error_messages={
             "unique": "Пользователь с такой почтой уже зарегистрирован",
         },
-        unique=True
+        unique=True,
     )
     contact_email = models.EmailField(
         verbose_name='Почта для связи', blank=True, null=True
@@ -103,6 +104,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     is_video_operator = models.BooleanField(
         verbose_name='Роль.Видео-оператор', default=False
+    )
+    equipment = models.CharField(
+        verbose_name='Оборудование', max_length=settings.MAX_LEN_NAME
     )
     birthday = models.DateField(
         verbose_name='День рождения', blank=True, null=True

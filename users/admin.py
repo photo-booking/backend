@@ -20,6 +20,7 @@ class UserAdmin(admin.ModelAdmin):
         'is_client',
         'is_photographer',
         'is_video_operator',
+        'equipment',
         'birthday',
         'social_telegram',
         'social_vkontakte',
