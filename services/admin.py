@@ -11,6 +11,7 @@ class ServiceAdmin(admin.ModelAdmin):
         'cost_service',
         'description_service',
         'due_date',
+        'order_delivery_time',
         'min_duration',
         'tag',
     )

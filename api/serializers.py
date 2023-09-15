@@ -69,6 +69,8 @@ class ServiceSerializer(serializers.ModelSerializer):
     image_service = Base64ImageField(required=False, allow_null=True)
     tag = TagsSerializer(read_only=True, many=True)
     authors = serializers.SerializerMethodField()
+    due_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M")
+    #    min_duration = serializers.IntegerField()
 
     class Meta:
         model = Service
@@ -79,6 +81,7 @@ class ServiceSerializer(serializers.ModelSerializer):
             'cost_service',
             'description_service',
             'due_date',
+            'order_delivery_time',
             'min_duration',
             'tag',
         )
