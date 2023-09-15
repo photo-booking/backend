@@ -87,12 +87,12 @@ class UserViewSet(DjoserUserViewSet):
                 user = serializer.get_user()
                 logging.info(f'user serializer {user}')
                 if user:
-                    context = {'user': user}
+                    context = {"user": user}
                     to = [get_user_email(user)]
                     settings.EMAIL.password_reset(self.request, context).send(to)
                     return Response(status=status.HTTP_200_OK)
-            except Exception:
-                logging.CRITICAL(f'{Exception}')
+            except Exception as e:
+                logging.critical('Error:', exc_info=e)
                 return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -202,7 +202,7 @@ def count_user(request):
 
 def user_token(user):
     token, _ = Token.objects.get_or_create(user=user)
-    logging.info(f'user toke: {token.key}')
+    logging.info(f'user token: {token.key}')
     return token.key
 
 
@@ -216,13 +216,14 @@ def get_token_user_from_google(request):
     try:
         user = create_google_user(token)
         logging.info(f'user created - {user}')
+    except Exception as e:
+        logging.critical('Error:', exc_info=e)
+        return Response(status=status.HTTP_502_BAD_GATEWAY)
+    else:
         token_bd = user_token(user[0])
         return Response(
-            status=status.HTTP_200_OK, data={'token:': {token_bd}}
+            status=status.HTTP_200_OK, data={'auth_token': {token_bd}}
         )
-    except Exception:
-        logging.CRITICAL(f'{Exception}')
-        return Response(status=status.HTTP_502_BAD_GATEWAY)
 
 
 @api_view(['POST'])
@@ -234,10 +235,11 @@ def get_token_from_vk_user(request):
     try:
         user = create_vk_user(code)
         logging.info(f'New user: {user[0]}')
+    except Exception as e:
+        logging.critical(' Error:', exc_info=e)
+        return Response(status=status.HTTP_502_BAD_GATEWAY)
+    else:
         token_bd = user_token(user[0])
         return Response(
-            status=status.HTTP_200_OK, data={'token:': {token_bd}}
+            status=status.HTTP_200_OK, data={'auth_token': {token_bd}}
         )
-    except Exception:
-        logging.CRITICAL(f'Exception {Exception}')
-        return Response(status=status.HTTP_502_BAD_GATEWAY)
