@@ -9,7 +9,7 @@ from services.models import Tag
 
 
 class Command(BaseCommand):
-    help = 'Импорт ингридиентов с json файла'
+    help = 'Импорт тэгов с json файла'
 
     def handle(self, *args, **options):
         tags = []
@@ -22,8 +22,8 @@ class Command(BaseCommand):
         except FileNotFoundError:
             self.stdout.write(self.style.ERROR('Файл не найден'))
 
-        for ingredient in data:
-            tags.append(Tag(name=ingredient['name'], slug=ingredient['slug']))
+        for tags in data:
+            tags.append(Tag(name=tags['name'], slug=tags['slug']))
         try:
             Tag.objects.bulk_create(tags)
             self.stdout.write(self.style.SUCCESS("Тэги загружены"))

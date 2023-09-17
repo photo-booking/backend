@@ -70,7 +70,6 @@ class ServiceSerializer(serializers.ModelSerializer):
     tag = TagsSerializer(read_only=True, many=True)
     authors = serializers.SerializerMethodField()
     due_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M")
-    #    min_duration = serializers.IntegerField()
 
     class Meta:
         model = Service
