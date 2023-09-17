@@ -90,7 +90,7 @@ class UserViewSet(DjoserUserViewSet):
                 logging.info(f'user serializer {user}')
                 if user:
                     context = {"user": user}
-                    to = [get_user_email(user)]
+                    to = [user]
                     settings.EMAIL.password_reset(self.request, context).send(
                         to
                     )
