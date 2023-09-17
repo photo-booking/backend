@@ -14,20 +14,29 @@ logging.basicConfig(
 def get_data_google(token):
     headers = {'Authorization': 'Bearer ' + token}
     url = 'https://www.googleapis.com/oauth2/v3/userinfo?alt=json'
-    response = requests.get(url, headers=headers)
-    return response.json()
+    try:
+        response = requests.get(url, headers=headers)
+        return response.json()
+    except Exception as e:
+        logging.critical('Error:', exc_info=e)
+        return {'error': 'Неверный токен, доступ к аккаунту гугл запрещен'}
 
 
 def create_google_user(token):
     try:
         data_user = get_data_google(token=token)
-        logging.info (f'data user - {data_user}')
+        logging.info(f'data user - {data_user}')
         email_user = data_user.get('email')
         first_name = data_user.get('given_name')
         last_name = data_user.get('family_name')
         profile_photo = data_user.get('picture')
-        try:
-            User.objects.update_or_create(
+    except ValueError:
+        return {'error': 'Неверный токен, доступ к аккаунту гугл запрещен'}
+    else:
+        if User.objects.filter(email=email_user).exists():
+            return User.objects.filter(email=email_user)
+        else:
+            User.objects.create(
                 email=email_user,
                 first_name=first_name,
                 last_name=last_name,
@@ -35,16 +44,13 @@ def create_google_user(token):
                 is_client=True,
                 password=generation_password())
             return User.objects.filter(email=email_user)
-        except SystemError:
-            return {'error': 'Пользователь не создан'}
-    except ValueError:
-        return {'error': 'Неверный токен, доступ к аккаунту гугл запрещен'}
 
 
 def get_data_vk(code):
     params_dict = {'client_id': {settings.SOCIAL_AUTH_VK_OAUTH2_KEY},
                    'client_secret': {settings.SOCIAL_AUTH_VK_OAUTH2_SECRET},
-                   'redirect_uri': 'https://photo-market.acceleratorpracticum.ru/sign-in',
+                   'redirect_uri': 'https://photo-market\
+                    .acceleratorpracticum.ru/sign-in',
                    'code': {code}
                    }
     url = 'https://oauth.vk.com/access_token'
@@ -70,21 +76,26 @@ def get_data_vk(code):
 def create_vk_user(code):
     try:
         user_responce, email = get_data_vk(code)
-        data_user = user_responce.get('response')
-        logging.info(f'data user - {data_user}')
-        for data in data_user:
-            first_name = data.get('first_name')
-            last_name = data.get('last_name')
-        try:
-            User.objects.update_or_create(
-                email=email,
-                first_name=first_name,
-                last_name=last_name,
-                is_client=True,
-                password=generation_password())
-            return User.objects.filter(email=email)
-        except Exception:
-            logging.CRITICAL(f'Exception - {Exception}')
-            return {'error': 'Пользователь не создан'}
+        logging.info(f'Получили данные из ВК {user_responce}, почта: {email}')
     except ValueError:
         return {'error': 'Неверный токен, доступ к аккаунту гугл запрещен'}
+    else:
+        if User.objects.filter(email=email).exists():
+            return User.objects.filter(email=email)
+        else:
+            data_user = user_responce.get('response')
+            logging.info(f'data user - {data_user}')
+            for data in data_user:
+                first_name = data.get('first_name')
+                last_name = data.get('last_name')
+            try:
+                User.objects.create(
+                    email=email,
+                    first_name=first_name,
+                    last_name=last_name,
+                    is_client=True,
+                    password=generation_password())
+                return User.objects.filter(email=email)
+            except Exception as e:
+                logging.critical('Error:', exc_info=e)
+                return {'error': 'Пользователь не создан'}

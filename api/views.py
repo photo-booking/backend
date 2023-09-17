@@ -89,14 +89,14 @@ class UserViewSet(DjoserUserViewSet):
                 user = serializer.get_user()
                 logging.info(f'user serializer {user}')
                 if user:
-                    context = {'user': user}
+                    context = {"user": user}
                     to = [get_user_email(user)]
                     settings.EMAIL.password_reset(self.request, context).send(
                         to
                     )
                     return Response(status=status.HTTP_200_OK)
-            except Exception:
-                logging.CRITICAL(f'{Exception}')
+            except Exception as e:
+                logging.critical('Error:', exc_info=e)
                 return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -209,7 +209,7 @@ def count_user(request):
 
 def user_token(user):
     token, _ = Token.objects.get_or_create(user=user)
-    logging.info(f'user toke: {token.key}')
+    logging.info(f'user token: {token.key}')
     return token.key
 
 
