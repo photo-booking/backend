@@ -11,3 +11,6 @@ pre-commit install
 ```
 ## Документация доступна по адресу
 - https://photo-market.acceleratorpracticum.ru/swagger/
+
+## Для загрузки тэгов в БД
+- выполните команду $ python manage.py create_tags

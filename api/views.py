@@ -1,21 +1,23 @@
 import logging
+from datetime import datetime
+
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.compat import get_user_email
 from djoser.conf import settings
 from djoser.views import UserViewSet as DjoserUserViewSet
 from rest_framework import status, viewsets
+from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.filters import SearchFilter
-from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
-from rest_framework.authtoken.models import Token
+from rest_framework.response import Response
 
+from api.action_social import create_google_user, create_vk_user
 from api.paginators import (
     CatalogPagination,
     LimitPageNumberPagination,
     PortfolioLimitPageNumberPagination,
 )
-from api.action_social import create_google_user, create_vk_user
 from orders.models import Chat, Message, Order, Raiting
 from properties.models import FeedbackProperty, Property, Room
 from services.models import MediaFile, Service
@@ -37,10 +39,10 @@ from .serializers import (
     SocialUserSerializer,
 )
 
-
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO)
+    level=logging.INFO,
+)
 
 
 class UserViewSet(DjoserUserViewSet):
@@ -89,7 +91,9 @@ class UserViewSet(DjoserUserViewSet):
                 if user:
                     context = {"user": user}
                     to = [get_user_email(user)]
-                    settings.EMAIL.password_reset(self.request, context).send(to)
+                    settings.EMAIL.password_reset(self.request, context).send(
+                        to
+                    )
                     return Response(status=status.HTTP_200_OK)
             except Exception as e:
                 logging.critical('Error:', exc_info=e)
@@ -123,6 +127,9 @@ class FBpropertyViewSet(viewsets.ModelViewSet):
 class ServiceViewSet(viewsets.ModelViewSet):
     queryset = Service.objects.all()
     serializer_class = ServiceSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(due_date=datetime.now())
 
 
 class GeneralCatalogExecutorCardViewSet(viewsets.ModelViewSet):

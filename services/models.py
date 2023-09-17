@@ -38,14 +38,19 @@ class Service(models.Model):
     description_service = models.TextField(
         verbose_name='Описание услуги', max_length=settings.MAX_LEN_NAME
     )
-    due_date = models.DateTimeField(verbose_name='Срок выполнения')
+    due_date = models.DateTimeField(verbose_name='Начало выполнения')
+    order_delivery_time = models.PositiveSmallIntegerField(
+        editable=True,
+        verbose_name='Срок выполнения',
+        help_text='введите срок предоставления'
+        'обработаных фотографий в днях',
+        validators=[MinValueValidator(1, 'минимальное значение 1')],
+    )
     min_duration = models.PositiveSmallIntegerField(
+        editable=True,
         verbose_name='Минимальное время съемки в часах',
         help_text='введите время съемки в часах',
         validators=[MinValueValidator(1, 'минимальное значение 1')],
-    )
-    equipment = models.CharField(
-        verbose_name='Оборудование', max_length=settings.MAX_LEN_NAME
     )
     tag = models.ManyToManyField(
         Tag, verbose_name='Вид съемки', blank=True, related_name='services'

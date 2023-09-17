@@ -69,6 +69,7 @@ class ServiceSerializer(serializers.ModelSerializer):
     image_service = Base64ImageField(required=False, allow_null=True)
     tag = TagsSerializer(read_only=True, many=True)
     authors = serializers.SerializerMethodField()
+    due_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M")
 
     class Meta:
         model = Service
@@ -79,7 +80,7 @@ class ServiceSerializer(serializers.ModelSerializer):
             'cost_service',
             'description_service',
             'due_date',
-            'equipment',
+            'order_delivery_time',
             'min_duration',
             'tag',
         )
@@ -165,6 +166,7 @@ class UserSerializer(serializers.ModelSerializer):
             'is_client',
             'is_photographer',
             'is_video_operator',
+            'equipment',
             'birthday',
             'social_telegram',
             'social_vkontakte',
@@ -188,9 +190,7 @@ class SocialUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Token
-        fields = (
-            'token',
-        )
+        fields = ('token',)
 
 
 class PropertySerializer(serializers.ModelSerializer):
@@ -281,9 +281,7 @@ class GeneralCatalogExecutorCardSerializer(serializers.ModelSerializer):
 class ShortServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Service
-        fields = (
-            'name_service',
-        )
+        fields = ('name_service',)
 
 
 class GeneralCatalogSorting(serializers.Serializer):

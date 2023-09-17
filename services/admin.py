@@ -11,7 +11,7 @@ class ServiceAdmin(admin.ModelAdmin):
         'cost_service',
         'description_service',
         'due_date',
-        'equipment',
+        'order_delivery_time',
         'min_duration',
         'tag',
     )
@@ -20,10 +20,7 @@ class ServiceAdmin(admin.ModelAdmin):
         'due_date',
         'name',
     )
-    list_filter = (
-        'cost_service',
-        'due_date',
-    )
+    list_filter = ('cost_service',)
     empty_value_display = '-пусто-'
 
     def tag(self, obj):
