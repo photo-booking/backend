@@ -148,6 +148,7 @@ class UserSerializer(serializers.ModelSerializer):
     profile_photo = Base64ImageField(required=False, allow_null=True)
     services = serializers.SerializerMethodField()
     mediafiles = serializers.SerializerMethodField()
+    min_cost = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -172,6 +173,7 @@ class UserSerializer(serializers.ModelSerializer):
             'social_vkontakte',
             'services',
             'mediafiles',
+            'min_cost',
         )
 
     def get_mediafiles(self, user, *args, **kwargs):
@@ -183,6 +185,11 @@ class UserSerializer(serializers.ModelSerializer):
         services = user.services.all()
         if services is not None:
             return ServiceSerializer(services, many=True).data
+
+    def get_min_cost(self, user, *args, **kwargs):
+        user_services = user.services.all()
+        if user_services and (user.is_photographer or user.is_video_operator):
+            return user_services.order_by('cost_service')[0].cost_service
 
 
 class SocialUserSerializer(serializers.ModelSerializer):
