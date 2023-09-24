@@ -90,11 +90,15 @@ class UserViewSet(DjoserUserViewSet):
                 logging.info(f'user serializer {user}')
                 if user:
                     context = {"user": user}
-                    to = [user]
+                    logging.info(f'context {context}')
+                    to = [get_user_email(user)]
+                    logging.info(f'to: {to}')
                     settings.EMAIL.password_reset(self.request, context).send(
                         to
                     )
                     return Response(status=status.HTTP_200_OK)
+                else:
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
             except Exception as e:
                 logging.critical('Error:', exc_info=e)
                 return Response(status=status.HTTP_400_BAD_REQUEST)

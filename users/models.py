@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.validators import RegexValidator
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -72,6 +73,9 @@ class User(AbstractBaseUser, PermissionsMixin):
             "unique": "Пользователь с такой почтой уже зарегистрирован",
         },
         unique=True,
+    )
+    password = models.CharField(
+        max_length=50,
     )
     contact_email = models.EmailField(
         verbose_name='Почта для связи', blank=True, null=True
