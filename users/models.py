@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.validators import RegexValidator
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
