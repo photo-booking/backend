@@ -76,11 +76,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     password = models.CharField(
         max_length=50,
-        validators=[RegexValidator(
-            regex=r'(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$',
-            message='Пароль должен быть минимум 8 символов\
-            и может содержать цифры,заглавные или строчные буквы')
-        ]
     )
     contact_email = models.EmailField(
         verbose_name='Почта для связи', blank=True, null=True
