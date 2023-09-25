@@ -6,11 +6,10 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 
-from api import urls
-
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include(urls)),
+    path('api/', include('api.urls', namespace='api')),
+    path('', include('chat.urls', namespace='chat')),
 ]
 
 if settings.DEBUG:
