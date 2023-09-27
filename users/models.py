@@ -75,7 +75,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         unique=True,
     )
     password = models.CharField(
-        max_length=50,
+        max_length=150,
     )
     contact_email = models.EmailField(
         verbose_name='Почта для связи', blank=True, null=True
