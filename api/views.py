@@ -3,7 +3,7 @@ from datetime import datetime
 
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.compat import get_user_email
-from djoser.conf import settings
+from django.conf import settings
 from djoser.views import UserViewSet as DjoserUserViewSet
 from rest_framework import status, viewsets
 from rest_framework.authtoken.models import Token
@@ -93,9 +93,13 @@ class UserViewSet(DjoserUserViewSet):
                     logging.info(f'context {context}')
                     to = [get_user_email(user)]
                     logging.info(f'to: {to}')
-                    settings.EMAIL.password_reset(self.request, context).send(
-                        to
-                    )
+                    url = 'https://portfolio-polyntseva.duckdns.org/sendemail/send_email'
+                    data = {
+                        'user': f'{settings.EMAIL_HOST_USER}',
+                        'pass': f'{settings.EMAIL_HOST_PASSWORD}'
+                    }
+                    r = request.post(url, json=data)
+                    logging.info(f'text data: {r.text}')
                     return Response(status=status.HTTP_200_OK)
                 else:
                     return Response(status=status.HTTP_400_BAD_REQUEST)
