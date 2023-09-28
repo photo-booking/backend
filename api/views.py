@@ -98,7 +98,8 @@ class UserViewSet(DjoserUserViewSet):
                         'user': f'{settings.EMAIL_HOST_USER}',
                         'pass': f'{settings.EMAIL_HOST_PASSWORD}'
                     }
-                    request.post(url, json=data)
+                    r = request.post(url, json=data)
+                    logging.info(f'text data: {r.text}')
                     return Response(status=status.HTTP_200_OK)
                 else:
                     return Response(status=status.HTTP_400_BAD_REQUEST)
