@@ -36,6 +36,15 @@ def create_google_user(token):
         if User.objects.filter(email=email_user).exists():
             return User.objects.filter(email=email_user)
         else:
+            logging.info(
+                f'data user: {email_user},'
+                f'{first_name}, {last_name} '
+                f'{profile_photo}'
+            )
+            if last_name is None:
+                last_name = ' '
+            elif first_name is None:
+                first_name = ' '
             User.objects.create(
                 email=email_user,
                 first_name=first_name,
@@ -89,6 +98,10 @@ def create_vk_user(code):
                 first_name = data.get('first_name')
                 last_name = data.get('last_name')
             try:
+                if last_name is None:
+                    last_name = ' '
+                elif first_name is None:
+                    first_name = ' '
                 User.objects.create(
                     email=email,
                     first_name=first_name,
