@@ -13,6 +13,10 @@ from .views import (
     RoomViewSet,
     ServiceViewSet,
     UserViewSet,
+    PersonalProfileViewSet,
+    ContactProfileViewSet,
+    ServiceProfileViewSet,
+    PriceListViewSet,
     count_user,
     get_token_user_from_google,
     get_token_from_vk_user,
@@ -32,11 +36,15 @@ router_v1.register('chats', ChatViewSet, 'chats')
 router_v1.register('messages', MessageViewSet, 'messages')
 router_v1.register('media_files', MediafileViewSet, 'media_files')
 router_v1.register('raitings', RaitingViewSet, 'raitings')
+router_v1.register('personal_profile', PersonalProfileViewSet, 'personal')
+router_v1.register('contacts_profile', ContactProfileViewSet, 'contacts')
+router_v1.register('service_profile', ServiceProfileViewSet, 'service_profile')
+router_v1.register('pricelist_profile', PriceListViewSet, 'price_list')
 
 urlpatterns = (
     path('users/count/', count_user, name='count_user'),
     path('', include(router_v1.urls)),
     path('auth/', include('djoser.urls.authtoken')),
     path('social_google/', get_token_user_from_google, name='google'),
-    path('social_vk/', get_token_from_vk_user, name='vk')
+    path('social_vk/', get_token_from_vk_user, name='vk'),
 )
