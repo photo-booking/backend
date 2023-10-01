@@ -298,7 +298,7 @@ class ContactProfileViewSet(viewsets.ModelViewSet):
 
 class ServiceProfileViewSet(viewsets.ModelViewSet):
     permission_classes = CurrentUserOrAdmin,
-    serializer_class = ServiceProfileSerializer,
+    serializer_class = ServiceProfileSerializer
 
     def get_queryset(self):
         user = self.request.user
@@ -306,9 +306,6 @@ class ServiceProfileViewSet(viewsets.ModelViewSet):
 
 
 class PriceListViewSet(viewsets.ModelViewSet):
+    queryset = Service.objects.all()
     permission_classes = CurrentUserOrAdmin,
-    serializer_class = PriceListSerializer,
-
-    def get_queryset(self):
-        user = self.request
-        return Service.objects.filter(author=user)
+    serializer_class = PriceListSerializer
