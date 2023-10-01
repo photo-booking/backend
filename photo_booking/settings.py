@@ -110,6 +110,8 @@ ASGI_APPLICATION = 'photo_booking.asgi.application'
 
 # Добавляем возможность работы со слоями для websocket соединения.
 # Дополнительно необходимо установить Redis
+REDIS_URL = 'redis://cache:6379'
+
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
@@ -118,6 +120,17 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379',
+    }
+}
+
+CACHES['default']['LOCATION'] = REDIS_URL
+CHANNEL_LAYERS['default']['CONFIG']['hosts'] = [REDIS_URL]
+
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases

@@ -3,41 +3,35 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Chat room for "{{ orders.id }}</title>
+    <title>Chat {{ order.name }}</title>
     <link href="{% static "css/base.css" %}" rel="stylesheet">
   </head>
   <body>
     <div id="header">
-      <a href="/" class="logo">Educa</a>
-      <ul class="menu">
-        {% if request.user.is_authenticated %}
-          <li><a href="{% url "logout" %}">Sign out</a></li>
-        {% else %}
-          <li><a href="{% url "login" %}">Sign in</a></li>
-        {% endif %}
-      </ul>
+      <a href="/" class="logo">Photobooking</a>
+
     </div>
     <div id="content">
         <div id="chat">
         </div>
         <div id="chat-input">
           <input id="chat-message-input" type="text">
-          <input id="chat-message-submit" type="submit" value="Send">
+          <input id="chat-message-submit" type="submit" value="Отправить">
         </div>
     </div>
-    {{ course.id|json_script:"course-id" }}
-    {{ request.user.username|json_script:"request-user" }}
+    {{ order.id|json_script:"order-id" }}
+    {{ request.user.first_name|json_script:"request-user" }}
     <script>
       document.addEventListener('DOMContentLoaded', (event) => {
         // DOM loaded
-        const courseId = JSON.parse(
-            document.getElementById('course-id').textContent
+        const orderId = JSON.parse(
+            document.getElementById('order-id').textContent
         );
         const requestUser = JSON.parse(
             document.getElementById('request-user').textContent
         );
         const url = 'ws://' + window.location.host +
-                    '/ws/chat/room/' + courseId + '/';
+                    '/ws/chat/room/' + orderId + '/';
         const chatSocket = new WebSocket(url);
 
         chatSocket.onmessage = function(event) {

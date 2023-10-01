@@ -18,7 +18,8 @@ from api.paginators import (
     LimitPageNumberPagination,
     PortfolioLimitPageNumberPagination,
 )
-from orders.models import Chat, Message, Order, Raiting
+from chat.models import Chat, Message
+from orders.models import Order, Raiting
 from properties.models import FeedbackProperty, Property, Room
 from services.models import MediaFile, Service
 from users.models import User

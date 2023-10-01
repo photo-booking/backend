@@ -1,16 +1,6 @@
 from django.contrib import admin
 
-from .models import Chat, Message, Order, Raiting
-
-
-@admin.register(Chat)
-class ChatAdmin(admin.ModelAdmin):
-    model = Chat
-    filter_horizontal = ('users',)
-    list_display = ('name',)
-    search_fields = ('users',)
-    list_filter = ('users',)
-    empty_value_display = '-пусто-'
+from .models import Order, Raiting
 
 
 @admin.register(Order)
@@ -41,24 +31,6 @@ class OrderAdmin(admin.ModelAdmin):
         'status',
         'users',
         'service',
-    )
-    empty_value_display = '-пусто-'
-
-
-@admin.register(Message)
-class MessageAdmin(admin.ModelAdmin):
-    list_display = (
-        'author',
-        'text',
-        'created_at',
-    )
-    search_fields = (
-        'author',
-        'created_at',
-    )
-    list_filter = (
-        'author',
-        'created_at',
     )
     empty_value_display = '-пусто-'
 

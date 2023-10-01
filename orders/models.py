@@ -1,24 +1,9 @@
 from django.conf import settings
 from django.db import models
 
+from chat.models import Chat
 from services.models import Service
 from users.models import User
-
-
-class Chat(models.Model):
-    name = models.CharField(
-        verbose_name='Название чата', max_length=settings.MAX_LEN_NAME
-    )
-    users = models.ManyToManyField(
-        User, verbose_name='Участники чата', related_name='chats'
-    )
-
-    class Meta:
-        verbose_name = 'Чат'
-        verbose_name_plural = 'Чаты'
-
-    def __str__(self):
-        return self.name
 
 
 class Order(models.Model):
@@ -57,32 +42,6 @@ class Order(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class Message(models.Model):
-    author = models.ForeignKey(
-        User,
-        verbose_name='Участник чата',
-        related_name='order_messages',
-        on_delete=models.CASCADE,
-    )
-    text = models.TextField(verbose_name='Текст сообщения')
-    created_at = models.DateTimeField(
-        verbose_name='Дата создания', auto_now_add=True
-    )
-    chat = models.ForeignKey(
-        Chat,
-        related_name='chat_messages',
-        on_delete=models.CASCADE,
-    )
-
-    class Meta:
-        ordering = ('author',)
-        verbose_name = 'Сообщение'
-        verbose_name_plural = 'Сообщения'
-
-    def __str__(self):
-        return self.text
 
 
 class Raiting(models.Model):
