@@ -25,9 +25,10 @@ services:
   frontend:
     image: geroy4ik/photo_market_frontend_dev:latest
     env_file: .env
-    command: cp -r /app/build/. /frontend_static/
+    command: cp -r /app/ ../frontend/
     volumes:
-        - frontend:/frontend_static
+      - frontend:/app/
+      - static_value:/app/static/
 
   nginx:
     image: nginx:1.19.3
