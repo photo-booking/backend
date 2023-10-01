@@ -112,7 +112,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name='Роль.Видео-оператор', default=False
     )
     equipment = models.CharField(
-        verbose_name='Оборудование', max_length=settings.MAX_LEN_NAME
+        verbose_name='Оборудование',
+        max_length=settings.MAX_LEN_NAME,
+        blank=True,
+        null=True,
     )
     birthday = models.DateField(
         verbose_name='День рождения', blank=True, null=True
