@@ -192,6 +192,50 @@ class UserSerializer(serializers.ModelSerializer):
             return user_services.order_by('cost_service')[0].cost_service
 
 
+class PersonalProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            'profile_photo',
+            'first_name',
+            'last_name',
+            'city',
+            'about_me',
+            'equipment',
+        )
+
+
+class ContactProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            'phone',
+            'social_telegram',
+            'social_vkontakte',
+        )
+
+
+class PriceListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Service
+        fields = (
+            'tag',
+            'cost_service',
+            'min_duration',
+            'order_delivery_time',
+        )
+
+
+class ServiceProfileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = MediaFile
+        fields = (
+            'link',
+            'photo',
+        )
+
+
 class SocialUserSerializer(serializers.ModelSerializer):
     token = serializers.SerializerMethodField()
 
