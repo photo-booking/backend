@@ -9,7 +9,8 @@ from djoser.serializers import (
 from rest_framework import serializers, status
 from rest_framework.authtoken.models import Token
 
-from orders.models import Chat, Message, Order, Raiting
+from chat.models import Chat, Message
+from orders.models import Order, Raiting
 from properties.models import FeedbackProperty, Property, Room
 from services.models import MediaFile, Service, Tag
 from users.models import User
@@ -227,7 +228,6 @@ class PriceListSerializer(serializers.ModelSerializer):
 
 
 class ServiceProfileSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = MediaFile
         fields = (
@@ -351,13 +351,14 @@ class ChatSerializer(serializers.ModelSerializer):
         model = Chat
         fields = (
             'name',
-            'users',
+            'host',
+            'current_users',
         )
 
 
 class OrderSerializer(serializers.ModelSerializer):
     service = serializers.StringRelatedField(read_only=True)
-    chat = serializers.StringRelatedField(read_only=True)
+    room = serializers.StringRelatedField(read_only=True)
     users = serializers.StringRelatedField(read_only=True, many=True)
 
     class Meta:
@@ -370,7 +371,7 @@ class OrderSerializer(serializers.ModelSerializer):
             'status',
             'users',
             'service',
-            'chat',
+            'room',
         )
 
 
@@ -380,8 +381,8 @@ class MessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
         fields = (
-            'chat',
-            'author',
+            'room',
+            'user',
             'text',
             'created_at',
         )

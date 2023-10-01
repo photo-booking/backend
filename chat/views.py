@@ -1,41 +1,30 @@
-# from asgiref.sync import sync_to_async
-from django.http import HttpResponseRedirect
+# from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseForbidden, HttpResponseNotFound
 from django.shortcuts import get_object_or_404, render
-from django.urls import reverse
+from rest_framework.authtoken.models import Token
 
-from .models import Room
-
-# from django.views.generic import TemplateView
-
-# from .tokenizator import create_token
+# from django.shortcuts import render
+# from users.models import User
 
 
-def index(request):
-    if request.method == "POST":
-        name = request.POST.get("name", None)
-        if name:
-            room = Room.objects.create(name=name, host=request.user)
-            print(room.pk)
-            return HttpResponseRedirect(
-                reverse("room", kwargs={"pk": room.pk})
-            )
-    # token = create_token(1)
-    # print(token)
-    return render(request, 'chat/index.html')
+def order_chat_room(request, order_id):
+    # token = request.headers["Authorization"].split(" ")[1]
+    try:
+        #        token = "34b08f70efc45c0d36ec10248167521def93d05a"
+        token = request.headers["Authorization"].split(" ")[
+            1
+        ]  # Получаем токен
 
-
-def room(request, pk):
-    room: Room = get_object_or_404(Room, pk=pk)
-    return render(
-        request,
-        'chat/room.html',
-        {
-            "room": room,
-        },
-    )
-
-
-def test(request):
-    # token = create_token(1)
-    # print(token)
-    return render(request, 'chat/test.html')
+        user = get_object_or_404(
+            Token, key=token
+        ).user  # Получаем пользователя по токену
+        try:
+            order = user.orders.get(pk=order_id)  # ищем заказ
+        except Exception:
+            return HttpResponseNotFound(content="Чат не найден")
+        print(order.chat_id)
+    except Exception:
+        return HttpResponseForbidden(
+            content="Пользователь не найден, передайте токен"
+        )
+    return render(request, 'chat/room.html', {'order': order})

@@ -22,18 +22,33 @@ services:
     env_file:
       - ./.env
 
+  frontend:
+    image: geroy4ik/photo_market_frontend_dev:latest
+    env_file: .env
+    command: cp -r /app/ ../frontend/
+    volumes:
+      - frontend:/app/
+      - static_value:/app/static/
+
   nginx:
     image: nginx:1.19.3
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./data/certbot/conf:/etc/nginx/ssl
+      - ./data/certbot/www:/var/www/certbot
+      - /etc/letsencrypt/:/etc/letsencrypt/
+      - frontend:/usr/share/nginx/html/
       - static_value:/var/html/static/
       - media_value:/var/html/media/
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
     depends_on:
       - backend
 
 volumes:
+  frontend:
   static_value:
   media_value:
   pg_data:

@@ -1,9 +1,9 @@
 from django.contrib import admin
 
-from chat.models import Message, Room
+from chat.models import Chat, Message
 
 
-@admin.register(Room)
+@admin.register(Chat)
 class RoomAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'host', '_current_users')
     search_fields = ('name', 'host', 'current_users')
@@ -13,7 +13,7 @@ class RoomAdmin(admin.ModelAdmin):
     )
 
     def _current_users(self, obj):
-        return ', '.join([user.username for user in obj.current_rooms.all()])
+        return ', '.join([user.first_name for user in obj.current_users.all()])
 
 
 @admin.register(Message)

@@ -22,8 +22,8 @@ class Command(BaseCommand):
         except FileNotFoundError:
             self.stdout.write(self.style.ERROR('Файл не найден'))
 
-        for tags in data:
-            tags.append(Tag(name=tags['name'], slug=tags['slug']))
+        for tag in data:
+            tags.append(Tag(name=tag['name'], slug=tag['slug']))
         try:
             Tag.objects.bulk_create(tags)
             self.stdout.write(self.style.SUCCESS("Тэги загружены"))

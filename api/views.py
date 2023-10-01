@@ -1,14 +1,14 @@
 import logging
-import requests
 from datetime import datetime
 
-from django_filters.rest_framework import DjangoFilterBackend
+import requests
+from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
+from django_filters.rest_framework import DjangoFilterBackend
 from djoser import utils
 from djoser.compat import get_user_email
 from djoser.conf import settings as djoser_settings
 from djoser.permissions import CurrentUserOrAdmin
-from django.conf import settings
 from djoser.views import UserViewSet as DjoserUserViewSet
 from rest_framework import status, viewsets
 from rest_framework.authtoken.models import Token
@@ -23,7 +23,8 @@ from api.paginators import (
     LimitPageNumberPagination,
     PortfolioLimitPageNumberPagination,
 )
-from orders.models import Chat, Message, Order, Raiting
+from chat.models import Chat, Message
+from orders.models import Order, Raiting
 from properties.models import FeedbackProperty, Property, Room
 from services.models import MediaFile, Service
 from users.models import User
@@ -31,21 +32,21 @@ from users.models import User
 from .filters import UsersFilter
 from .serializers import (
     ChatSerializer,
+    ContactProfileSerializer,
     CountUserSerializer,
     FBpropertySerializer,
     GeneralCatalogExecutorCardSerializer,
     MediafileSerializer,
     MessageSerializer,
     OrderSerializer,
+    PersonalProfileSerializer,
+    PriceListSerializer,
     PropertySerializer,
     RaitingSerializer,
     RoomSerializer,
+    ServiceProfileSerializer,
     ServiceSerializer,
     SocialUserSerializer,
-    PersonalProfileSerializer,
-    ContactProfileSerializer,
-    PriceListSerializer,
-    ServiceProfileSerializer,
 )
 
 logging.basicConfig(
@@ -105,7 +106,8 @@ class UserViewSet(DjoserUserViewSet):
                     token_user = default_token_generator.make_token(user)
                     url_reset = (
                         djoser_settings.PASSWORD_RESET_CONFIRM_URL.format(
-                            **context)
+                            **context
+                        )
                     )
                     url = 'https://portfolio-polyntseva.duckdns.org/'
                     'sendemail/send_email'
@@ -280,7 +282,7 @@ def get_token_from_vk_user(request):
 
 class PersonalProfileViewSet(viewsets.ModelViewSet):
     serializer_class = PersonalProfileSerializer
-    permission_classes = CurrentUserOrAdmin,
+    permission_classes = (CurrentUserOrAdmin,)
 
     def get_queryset(self):
         user = self.request.user
@@ -289,7 +291,7 @@ class PersonalProfileViewSet(viewsets.ModelViewSet):
 
 class ContactProfileViewSet(viewsets.ModelViewSet):
     serializer_class = ContactProfileSerializer
-    permission_classes = CurrentUserOrAdmin,
+    permission_classes = (CurrentUserOrAdmin,)
 
     def get_queryset(self):
         user = self.request.user
@@ -297,7 +299,7 @@ class ContactProfileViewSet(viewsets.ModelViewSet):
 
 
 class ServiceProfileViewSet(viewsets.ModelViewSet):
-    permission_classes = CurrentUserOrAdmin,
+    permission_classes = (CurrentUserOrAdmin,)
     serializer_class = ServiceProfileSerializer
 
     def get_queryset(self):
@@ -307,5 +309,5 @@ class ServiceProfileViewSet(viewsets.ModelViewSet):
 
 class PriceListViewSet(viewsets.ModelViewSet):
     queryset = Service.objects.all()
-    permission_classes = CurrentUserOrAdmin,
+    permission_classes = (CurrentUserOrAdmin,)
     serializer_class = PriceListSerializer
