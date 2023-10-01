@@ -1,9 +1,14 @@
 import logging
 from datetime import datetime
 
+import requests
+from django.conf import settings
+from django.contrib.auth.tokens import default_token_generator
 from django_filters.rest_framework import DjangoFilterBackend
+from djoser import utils
 from djoser.compat import get_user_email
-from djoser.conf import settings
+from djoser.conf import settings as djoser_settings
+from djoser.permissions import CurrentUserOrAdmin
 from djoser.views import UserViewSet as DjoserUserViewSet
 from rest_framework import status, viewsets
 from rest_framework.authtoken.models import Token
@@ -27,15 +32,19 @@ from users.models import User
 from .filters import UsersFilter
 from .serializers import (
     ChatSerializer,
+    ContactProfileSerializer,
     CountUserSerializer,
     FBpropertySerializer,
     GeneralCatalogExecutorCardSerializer,
     MediafileSerializer,
     MessageSerializer,
     OrderSerializer,
+    PersonalProfileSerializer,
+    PriceListSerializer,
     PropertySerializer,
     RaitingSerializer,
     RoomSerializer,
+    ServiceProfileSerializer,
     ServiceSerializer,
     SocialUserSerializer,
 )
@@ -92,11 +101,25 @@ class UserViewSet(DjoserUserViewSet):
                 if user:
                     context = {"user": user}
                     logging.info(f'context {context}')
-                    to = [get_user_email(user)]
-                    logging.info(f'to: {to}')
-                    settings.EMAIL.password_reset(self.request, context).send(
-                        to
+                    to = get_user_email(user)
+                    uid = utils.encode_uid(user.pk)
+                    token_user = default_token_generator.make_token(user)
+                    url_reset = (
+                        djoser_settings.PASSWORD_RESET_CONFIRM_URL.format(
+                            **context
+                        )
                     )
+                    url = 'https://portfolio-polyntseva.duckdns.org/'
+                    'sendemail/send_email'
+                    data = {
+                        'user': f'{settings.EMAIL_HOST_USER}',
+                        'pass': f'{settings.EMAIL_HOST_PASSWORD}',
+                        'from': f'{settings.EMAIL_HOST_USER}',
+                        'to': f'{to}',
+                        'subject': 'Сброс пароля',
+                        'text': f'{url_reset}/{uid}/{token_user}',
+                    }
+                    requests.post(url, json=data)
                     return Response(status=status.HTTP_200_OK)
                 else:
                     return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -255,3 +278,36 @@ def get_token_from_vk_user(request):
         return Response(
             status=status.HTTP_200_OK, data={'auth_token': {token_bd}}
         )
+
+
+class PersonalProfileViewSet(viewsets.ModelViewSet):
+    serializer_class = PersonalProfileSerializer
+    permission_classes = (CurrentUserOrAdmin,)
+
+    def get_queryset(self):
+        user = self.request.user
+        return User.objects.filter(email=user)
+
+
+class ContactProfileViewSet(viewsets.ModelViewSet):
+    serializer_class = ContactProfileSerializer
+    permission_classes = (CurrentUserOrAdmin,)
+
+    def get_queryset(self):
+        user = self.request.user
+        return User.objects.filter(email=user)
+
+
+class ServiceProfileViewSet(viewsets.ModelViewSet):
+    permission_classes = (CurrentUserOrAdmin,)
+    serializer_class = ServiceProfileSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return MediaFile.objects.filter(author=user)
+
+
+class PriceListViewSet(viewsets.ModelViewSet):
+    queryset = Service.objects.all()
+    permission_classes = (CurrentUserOrAdmin,)
+    serializer_class = PriceListSerializer

@@ -29,6 +29,9 @@ class AccountManager(BaseUserManager):
         user.set_password(password)
         user.is_staff = False
         user.is_superuser = False
+        if user.is_client is False:
+            user.is_photographer = True
+            user.is_video_operator = False
         user.save(using=self._db)
         return user
 
