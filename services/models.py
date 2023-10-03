@@ -1,8 +1,8 @@
+import django.utils.timezone
 from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import enums
-import datetime
 
 
 class Tag(models.Model):
@@ -39,8 +39,9 @@ class Service(models.Model):
     description_service = models.TextField(
         verbose_name='Описание услуги', max_length=settings.MAX_LEN_NAME
     )
-    due_date = models.DateTimeField(verbose_name='Начало выполнения',
-                                    default=datetime.date.today())
+    due_date = models.DateTimeField(
+        verbose_name='Начало выполнения', default=django.utils.timezone.now
+    )
     order_delivery_time = models.PositiveSmallIntegerField(
         editable=True,
         verbose_name='Срок выполнения',

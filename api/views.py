@@ -1,14 +1,11 @@
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
+import jwt
 import requests
 from django.conf import settings
-from django.contrib.auth.tokens import default_token_generator
 from django_filters.rest_framework import DjangoFilterBackend
-from djoser import utils
 from djoser.compat import get_user_email
-from djoser.conf import settings as djoser_settings
-from djoser.permissions import CurrentUserOrAdmin
 from djoser.views import UserViewSet as DjoserUserViewSet
 from rest_framework import status, viewsets
 from rest_framework.authtoken.models import Token
@@ -32,19 +29,15 @@ from users.models import User
 from .filters import UsersFilter
 from .serializers import (
     ChatSerializer,
-    ContactProfileSerializer,
     CountUserSerializer,
     FBpropertySerializer,
     GeneralCatalogExecutorCardSerializer,
     MediafileSerializer,
     MessageSerializer,
     OrderSerializer,
-    PersonalProfileSerializer,
-    PriceListSerializer,
     PropertySerializer,
     RaitingSerializer,
     RoomSerializer,
-    ServiceProfileSerializer,
     ServiceSerializer,
     SocialUserSerializer,
 )
@@ -102,27 +95,81 @@ class UserViewSet(DjoserUserViewSet):
                     context = {"user": user}
                     logging.info(f'context {context}')
                     to = get_user_email(user)
-                    uid = utils.encode_uid(user.pk)
-                    token_user = default_token_generator.make_token(user)
-                    url_reset = (
-                        djoser_settings.PASSWORD_RESET_CONFIRM_URL.format(
-                            **context
-                        )
+                    url_reset = 'https://photo-market.acceleratorpracticum.ru/reset-password'
+                    secret = 'jwt_secret'
+                    payload_email = {
+                        'exp': datetime.now(timezone.utc) + timedelta(hours=1),
+                        'token': user.email,
+                    }
+                    logging.info(f'payload: {payload_email}')
+                    payload_id = {
+                        'exp': datetime.now(timezone.utc) + timedelta(hours=1),
+                        'token': user.id,
+                    }
+                    logging.info(f'payload: {payload_id}')
+                    token = jwt.encode(
+                        payload_email, secret, algorithm='HS256'
                     )
-                    url = 'https://portfolio-polyntseva.duckdns.org/'
-                    'sendemail/send_email'
+                    logging.info(f'token {token}')
+                    token_id = jwt.encode(
+                        payload_id, secret, algorithm='HS256'
+                    )
+                    claims = jwt.decode(token, secret, algorithms=['HS256'])
+                    logging.info(f'decode: {claims}')
+                    claims_id = jwt.decode(
+                        token_id, secret, algorithms=['HS256']
+                    )
+                    logging.info(f'decode id: {claims_id}')
+                    url = 'https://portfolio-polyntseva.duckdns.org/sendemail/send_email'
                     data = {
                         'user': f'{settings.EMAIL_HOST_USER}',
                         'pass': f'{settings.EMAIL_HOST_PASSWORD}',
                         'from': f'{settings.EMAIL_HOST_USER}',
                         'to': f'{to}',
                         'subject': 'Сброс пароля',
-                        'text': f'{url_reset}/{uid}/{token_user}',
+                        'text': f'{url_reset}?uid={token_id}&token={token}',
                     }
                     requests.post(url, json=data)
                     return Response(status=status.HTTP_200_OK)
                 else:
                     return Response(status=status.HTTP_400_BAD_REQUEST)
+            except Exception as e:
+                logging.critical('Error:', exc_info=e)
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    @action(['POST'], detail=False)
+    def reset_password_confirm(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        logging.info(f'value serializer {serializer}')
+        serializer.is_valid(raise_exception=True)
+        logging.info(f'valid {serializer.is_valid(raise_exception=True)}')
+        datas = serializer.data
+        logging.info(f'serializer data: {datas}')
+        current_time = int(round(datetime.now(timezone.utc).timestamp()))
+        logging.info(f'current time: {current_time}')
+        secret = 'jwt_secret'
+        token_time = jwt.decode(datas.get('uid'), secret, algorithms=['HS256'])
+        logging.info(f'token_time: {token_time}')
+        if current_time > token_time['exp']:
+            return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
+        else:
+            decode_token = jwt.decode(
+                datas.get('token'), secret, algorithms=['HS256']
+            )
+            logging.info(f'decode_token: {decode_token}')
+            email = decode_token['token']
+            logging.info(f'email: {email}')
+            try:
+                user = User.objects.get(email=email)
+                new_password = datas.get('new_password')
+                logging.info(f'user: {user}')
+                user.set_password(new_password)
+                logging.info(f'password: {new_password}')
+                user.save()
+                return Response(
+                    {'message': 'Password changed successfully.'},
+                    status=status.HTTP_200_OK,
+                )
             except Exception as e:
                 logging.critical('Error:', exc_info=e)
                 return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -278,36 +325,3 @@ def get_token_from_vk_user(request):
         return Response(
             status=status.HTTP_200_OK, data={'auth_token': {token_bd}}
         )
-
-
-class PersonalProfileViewSet(viewsets.ModelViewSet):
-    serializer_class = PersonalProfileSerializer
-    permission_classes = (CurrentUserOrAdmin,)
-
-    def get_queryset(self):
-        user = self.request.user
-        return User.objects.filter(email=user)
-
-
-class ContactProfileViewSet(viewsets.ModelViewSet):
-    serializer_class = ContactProfileSerializer
-    permission_classes = (CurrentUserOrAdmin,)
-
-    def get_queryset(self):
-        user = self.request.user
-        return User.objects.filter(email=user)
-
-
-class ServiceProfileViewSet(viewsets.ModelViewSet):
-    permission_classes = (CurrentUserOrAdmin,)
-    serializer_class = ServiceProfileSerializer
-
-    def get_queryset(self):
-        user = self.request.user
-        return MediaFile.objects.filter(author=user)
-
-
-class PriceListViewSet(viewsets.ModelViewSet):
-    queryset = Service.objects.all()
-    permission_classes = (CurrentUserOrAdmin,)
-    serializer_class = PriceListSerializer
