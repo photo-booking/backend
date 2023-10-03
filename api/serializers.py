@@ -345,7 +345,7 @@ class GeneralCatalogSorting(serializers.Serializer):
 
 
 class ChatSerializer(serializers.ModelSerializer):
-    users = serializers.StringRelatedField(read_only=True, many=True)
+    current_users = serializers.StringRelatedField(read_only=True, many=True)
 
     class Meta:
         model = Chat
@@ -376,12 +376,12 @@ class OrderSerializer(serializers.ModelSerializer):
 
 
 class MessageSerializer(serializers.ModelSerializer):
-    author = serializers.StringRelatedField(read_only=True)
+    user = serializers.StringRelatedField(read_only=True)
 
     class Meta:
         model = Message
         fields = (
-            'room',
+            'chat',
             'user',
             'text',
             'created_at',
