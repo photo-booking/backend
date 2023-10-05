@@ -236,6 +236,7 @@ DJOSER = {
         'password_reset_confirm': 'api.serializers.CustomPasswordResetConfirmSerializer',
         'user_create': 'api.serializers.CustomUserCreateSerializer',
         'token_create': 'api.serializers.CustomTokenCreateSerializer',
+        'user_delete': 'api.serializers.CustomDeleteUserSerializer',
     },
 }
 
