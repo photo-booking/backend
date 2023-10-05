@@ -164,7 +164,11 @@ AUTH_PASSWORD_VALIDATORS = [
 
 SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': {
-        'Bearer': {'type': 'apiKey', 'name': 'Authorization', 'in': 'header'}
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header',
+        }
     }
 }
 
@@ -229,8 +233,10 @@ DJOSER = {
         'user': 'api.serializers.UserSerializer',
         'user_list': 'api.serializers.UserSerializer',
         'password_reset': 'api.serializers.CustomSendEmailResetSerializer',
+        'password_reset_confirm': 'api.serializers.CustomPasswordResetConfirmSerializer',
         'user_create': 'api.serializers.CustomUserCreateSerializer',
         'token_create': 'api.serializers.CustomTokenCreateSerializer',
+        'user_delete': 'api.serializers.CustomDeleteUserSerializer',
     },
 }
 

@@ -68,6 +68,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name='Фото профиля',
         upload_to='users/profile_photo',
         blank=True,
+        null=True,
     )
     email = models.EmailField(
         verbose_name='Почта для регистрации',
@@ -80,21 +81,29 @@ class User(AbstractBaseUser, PermissionsMixin):
         max_length=150,
     )
     contact_email = models.EmailField(
-        verbose_name='Почта для связи', blank=True, null=True
+        verbose_name='Почта для связи',
+        blank=True,
+        null=True,
     )
     phone = PhoneField(
         verbose_name='Номер телефона',
         help_text='Телефон для контакта',
+        blank=True,
+        null=True,
     )
     work_experience = models.FloatField(
         verbose_name='Опыт работы',
         default=0,
+        blank=True,
+        null=True,
     )
     # Нужно сделать базу с городами
     city = models.CharField(
         verbose_name='Город',
         help_text='Укажите город проживания',
         max_length=settings.MAX_LEN_NAME,
+        blank=True,
+        null=True,
     )
     raiting = models.PositiveSmallIntegerField(
         verbose_name='Рейтинг профиля',
@@ -102,29 +111,43 @@ class User(AbstractBaseUser, PermissionsMixin):
         null=True,
     )
     about_me = models.TextField(
-        verbose_name='Обо мне', max_length=settings.MAX_TEXT_LEN
+        verbose_name='Обо мне',
+        max_length=settings.MAX_LEN_ABOUT_ME,
+        blank=True,
+        null=True,
     )
-    is_client = models.BooleanField(verbose_name='Роль.Клиент', default=True)
+    is_client = models.BooleanField(
+        verbose_name='Роль.Клиент',
+        default=True,
+    )
     is_photographer = models.BooleanField(
-        verbose_name='Роль.Фотограф', default=False
+        verbose_name='Роль.Фотограф',
+        default=False,
     )
     is_video_operator = models.BooleanField(
-        verbose_name='Роль.Видео-оператор', default=False
+        verbose_name='Роль.Видео-оператор',
+        default=False,
     )
     equipment = models.CharField(
         verbose_name='Оборудование',
-        max_length=settings.MAX_LEN_NAME,
+        max_length=settings.MAX_TEXT_LEN,
         blank=True,
         null=True,
     )
     birthday = models.DateField(
-        verbose_name='День рождения', blank=True, null=True
+        verbose_name='День рождения',
+        blank=True,
+        null=True,
     )
     social_telegram = models.URLField(
-        verbose_name='Телеграм', blank=True, null=True
+        verbose_name='Телеграм',
+        blank=True,
+        null=True,
     )
     social_vkontakte = models.URLField(
-        verbose_name='Вконтакте', blank=True, null=True
+        verbose_name='Вконтакте',
+        blank=True,
+        null=True,
     )
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)

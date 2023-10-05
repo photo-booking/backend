@@ -1,7 +1,10 @@
 import base64
 
+import jwt
 from django.core.files.base import ContentFile
+from django.forms import ValidationError
 from djoser.serializers import (
+    PasswordSerializer,
     SendEmailResetSerializer,
     TokenCreateSerializer,
     UserCreateSerializer,
@@ -419,3 +422,51 @@ class CustomUserCreateSerializer(UserCreateSerializer):
         "cannot_create_user": 'Мы не можем создать пользователя, \
         обратитесь в форму обратной связи'
     }
+
+
+class CustomPasswordResetConfirmSerializer(PasswordSerializer):
+    uid = serializers.CharField()
+    token = serializers.CharField()
+
+    default_error_messages = {
+        "invalid_token": 'Неверный токен пользователя',
+        "invalid_uid": 'uid',
+    }
+
+    def validate(self, attrs):
+        validated_data = super().validate(attrs)
+        secret = 'jwt_secret'
+        try:
+            uid = jwt.decode(
+                self.initial_data.get('uid', ''),
+                secret,
+                algorithms=['HS256'],
+            )
+            user_id = uid.get('token')
+            user = User.objects.get(pk=user_id)
+        except (User.DoesNotExist, ValueError, TypeError, OverflowError):
+            key_error = "invalid_uid"
+        if user:
+            return validated_data
+        else:
+            key_error = "invalid_token"
+            raise ValidationError(
+                {"token": [self.error_messages[key_error]]}, code=key_error
+            )
+
+
+class CustomDeleteUserSerializer(serializers.Serializer):
+    token = serializers.IntegerField()
+
+    default_error_messages = {
+        "invalid_data": "Неверные данные для удаления"
+    }
+
+    def validate(self, value):
+        user_data = User.objects.get(pk=value)
+        user = self.context['request'].user
+        if user_data == user:
+            return super().validate(value)
+        else:
+            self.fail("invalid_data")
+
