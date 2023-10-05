@@ -453,3 +453,20 @@ class CustomPasswordResetConfirmSerializer(PasswordSerializer):
             raise ValidationError(
                 {"token": [self.error_messages[key_error]]}, code=key_error
             )
+
+
+class CustomDeleteUserSerializer(serializers.Serializer):
+    token = serializers.IntegerField()
+
+    default_error_messages = {
+        "invalid_data": "Неверные данные для удаления"
+    }
+
+    def validate(self, value):
+        user_data = User.objects.get(pk=value)
+        user = self.context['request'].user
+        if user_data == user:
+            return super().validate(value)
+        else:
+            self.fail("invalid_data")
+

@@ -112,7 +112,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     about_me = models.TextField(
         verbose_name='Обо мне',
-        max_length=settings.MAX_TEXT_LEN,
+        max_length=settings.MAX_LEN_ABOUT_ME,
         blank=True,
         null=True,
     )
@@ -130,7 +130,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     equipment = models.CharField(
         verbose_name='Оборудование',
-        max_length=settings.MAX_LEN_NAME,
+        max_length=settings.MAX_TEXT_LEN,
         blank=True,
         null=True,
     )
