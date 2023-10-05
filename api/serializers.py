@@ -469,3 +469,4 @@ class CustomDeleteUserSerializer(serializers.Serializer):
             return super().validate(value)
         else:
             self.fail("invalid_data")
+
