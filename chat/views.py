@@ -50,7 +50,13 @@ def index(request):
                 )
                 room.current_users.add(current_users)
                 return redirect('chat:room', room.pk)
-    return render(request, 'chat/index.html', {'users': users})
+    return render(
+        request,
+        'chat/index.html',
+        {
+            'users': users,
+        },
+    )
 
 
 def room(request, pk):

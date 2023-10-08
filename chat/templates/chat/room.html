@@ -9,13 +9,16 @@
 <textarea id="chat-log" cols="100" rows="20"></textarea><br>
 <input id="chat-message-input" type="text" size="100"><br>
 <input id="chat-message-submit" type="button" value="Отправить">
-
+<pre id="response"></pre>
 <script
     src="https://code.jquery.com/jquery-3.6.0.min.js"
     integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
     crossorigin="anonymous"></script>
+{{ room.pk|json_script:"chat-id" }}
+{{ request.user.first_name|json_script:"request-user" }}
+{{ request.user.last_name|json_script:"request-user_lst" }}
 <script>
-    const room_pk = "{{ room.pk }}";
+    const room_pk = {{ room.pk }};
     const request_id = new Date().getTime()
     const token = '34b08f70efc45c0d36ec10248167521def93d05a'
     console.log(room_pk)
@@ -23,10 +26,27 @@
     console.log("request", '{{request}}')
         // Мнеобходимо изменить место нахождения токе с локал в хеадер
     //const chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat/?token=${localStorage.getItem('Token')}`);
-    const chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat/?token=34b08f70efc45c0d36ec10248167521def93d05a`);
+
+    const chatId = JSON.parse(
+        document.getElementById('chat-id').textContent
+    );
+    const userId = JSON.parse(
+        document.getElementById('request-user').textContent
+    );
+    const userLst = JSON.parse(
+        document.getElementById('request-user_lst').textContent
+    );
+    {% comment %} const url = 'ws://' + window.location.host +
+    '/ws/chat/' + chatId + '/';                 {% endcomment %}
+    const chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat/${chatId}/?token=34b08f70efc45c0d36ec10248167521def93d05a`);
+    //const chatSocket = new WebSocket(url);
     console.log(chatSocket)
 
-    chatSocket.onopen = function () {
+    chatSocket.onopen = function (x) {
+        console.log('Hihi', x)
+        console.log('User_name', userId)
+        console.log('User_last_name', userLst)
+        console.log('roompk', room_pk)
         chatSocket.send(
             JSON.stringify({
                 pk: room_pk,
@@ -34,6 +54,10 @@
                 request_id: request_id,
             })
         );
+        chatSocket.send(JSON.stringify({
+            action: "list",
+            request_id: new Date().getTime(),
+        }))
         chatSocket.send(
             JSON.stringify({
                 pk: room_pk,
@@ -59,11 +83,11 @@
 
     chatSocket.onmessage = function (e) {
         const data = JSON.parse(e.data);
-        console.log('RealTime', data.data)
+        console.log('RealTime', data)
         switch (data.action) {
             case "retrieve":
                 console.log(data.data)
-                document.getElementById('first_name').innerText = data.data.host.first_name
+                document.getElementById('userId').innerText = data.data.host.first_name
                 for (let mess of data.data.messages) {
                     console.log(mess.text)
                 }
@@ -93,8 +117,10 @@
     $('#chat-message-submit').on('click', function (e) {
         const message = $('#chat-message-input').val();
         chatSocket.send(JSON.stringify({
-            message: message,
-            action: "create_message",
+            data: {'message': message,
+            'first_name': userId,
+            'last_name': userLst},
+            action: "create_massage",
             request_id: request_id,
         }));
         $('#chat-message-input').val('');

@@ -9,17 +9,20 @@ from djangochannelsrestframework.observer.generics import (
     ObserverModelInstanceMixin,
     action,
 )
+from rest_framework import permissions, status
 
 from .models import Chat, Message
-from .serializers import MessageSerializer, RoomSerializer, ShortUserSerializer
+from .serializers import MessageSerializer, ShortUserSerializer
 
+# from .serializers import RoomSerializer
 User = get_user_model()
 
 
 class ChatConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
-    queryset = Chat.objects.all()
-    serializer_class = RoomSerializer
+    queryset = Message.objects.all()
+    serializer_class = MessageSerializer
     lookup_field = "pk"
+    permission_classes = (permissions.AllowAny,)
 
     async def disconnect(self, code):
         if hasattr(self, "room_subscribe"):
@@ -101,9 +104,21 @@ class ChatConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
 
     @database_sync_to_async
     def add_user_to_room(self, pk):
+        print(11111111111)
+        print(self.scope["user"])
         user: User = self.scope["user"]
         if not user.current_rooms.filter(pk=self.room_subscribe).exists():
             user.current_rooms.add(Chat.objects.get(pk=pk))
+
+    @action()
+    @database_sync_to_async
+    def create_massage(self, data: dict, **kwargs):
+        print(1111111)
+        print(data)
+        serializer = MessageSerializer(data=data, action_kwargs=kwargs)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer, **kwargs)
+        return serializer.data, status.HTTP_201_CREATED
 
 
 class UserConsumer(
