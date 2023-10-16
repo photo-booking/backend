@@ -11,11 +11,15 @@ https://docs.djangoproject.com/en/4.2/howto/deployment/asgi/
 import os
 
 import django
-from channels.auth import AuthMiddlewareStack
+
+# from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
+
+# from channels.security.websocket import AllowedHostsOriginValidator
 from django.core.asgi import get_asgi_application
 
 from chat import routing
+from chat.middleware import JwtAuthMiddlewareStack
 
 # from chat.middleware import JwtAuthMiddlewareStack
 
@@ -24,10 +28,19 @@ django.setup()
 
 # application = get_asgi_application()
 
+# application = ProtocolTypeRouter({
+#         "http": get_asgi_application(),
+#         'websocket': AllowedHostsOriginValidator(
+#             AuthMiddlewareStack(
+#                 URLRouter(routing.websocket_urlpatterns)
+#             )
+#         ),
+# })
+
 application = ProtocolTypeRouter(
     {
         "http": get_asgi_application(),
-        'websocket': AuthMiddlewareStack(
+        "websocket": JwtAuthMiddlewareStack(
             URLRouter(routing.websocket_urlpatterns)
         ),
     }

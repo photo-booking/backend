@@ -1,85 +1,131 @@
-{% load static %}
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Chat {{ order.name }}</title>
-    <link href="{% static "css/base.css" %}" rel="stylesheet">
-  </head>
-  <body>
-    <div id="header">
-      <a href="/" class="logo">Photobooking</a>
+<head>
+  <meta charset="utf-8"/>
+  <title>Chat Rooms</title>
+</head>
+<body>
+<h4>Hi - <span id="{{ request.user }}"></span></h4>
+<textarea id="chat-log" cols="100" rows="20"></textarea><br>
+<input id="chat-message-input" type="text" size="100"><br>
+<input id="chat-message-submit" type="button" value="Отправить">
+<pre id="response"></pre>
+<script
+    src="https://code.jquery.com/jquery-3.6.0.min.js"
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+    crossorigin="anonymous"></script>
+{{ room.pk|json_script:"chat-id" }}
+{{ request.user.first_name|json_script:"request-user" }}
+{{ request.user.last_name|json_script:"request-user_lst" }}
+<script>
+    const room_pk = {{ room.pk }};
+    const request_id = new Date().getTime()
+    const token = '34b08f70efc45c0d36ec10248167521def93d05a'
+    console.log(room_pk)
+    console.log(request_id)
+    console.log("request", '{{request}}')
+        // Мнеобходимо изменить место нахождения токе с локал в хеадер
+    //const chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat/?token=${localStorage.getItem('Token')}`);
 
-    </div>
-    <div id="content">
-        <div id="chat">
-        </div>
-        <div id="chat-input">
-          <input id="chat-message-input" type="text">
-          <input id="chat-message-submit" type="submit" value="Отправить">
-        </div>
-    </div>
-    {{ order.id|json_script:"order-id" }}
-    {{ request.user.first_name|json_script:"request-user" }}
-    <script>
-      document.addEventListener('DOMContentLoaded', (event) => {
-        // DOM loaded
-        const orderId = JSON.parse(
-            document.getElementById('order-id').textContent
+    const chatId = JSON.parse(
+        document.getElementById('chat-id').textContent
+    );
+    const userId = JSON.parse(
+        document.getElementById('request-user').textContent
+    );
+    const userLst = JSON.parse(
+        document.getElementById('request-user_lst').textContent
+    );
+    {% comment %} const url = 'ws://' + window.location.host +
+    '/ws/chat/' + chatId + '/';                 {% endcomment %}
+    const chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat/${chatId}/?token=34b08f70efc45c0d36ec10248167521def93d05a`);
+    //const chatSocket = new WebSocket(url);
+    console.log(chatSocket)
+
+    chatSocket.onopen = function (x) {
+        console.log('Hihi', x)
+        console.log('User_name', userId)
+        console.log('User_last_name', userLst)
+        console.log('roompk', room_pk)
+        chatSocket.send(
+            JSON.stringify({
+                pk: room_pk,
+                action: "join_room",
+                request_id: request_id,
+            })
         );
-        const requestUser = JSON.parse(
-            document.getElementById('request-user').textContent
+        chatSocket.send(JSON.stringify({
+            action: "list",
+            request_id: new Date().getTime(),
+        }))
+        chatSocket.send(
+            JSON.stringify({
+                pk: room_pk,
+                action: "retrieve",
+                request_id: request_id,
+            })
         );
-        const url = 'ws://' + window.location.host +
-                    '/ws/chat/room/' + orderId + '/';
-        const chatSocket = new WebSocket(url);
+        chatSocket.send(
+            JSON.stringify({
+                pk: room_pk,
+                action: "subscribe_to_messages_in_room",
+                request_id: request_id,
+            })
+        );
+        chatSocket.send(
+            JSON.stringify({
+                pk: room_pk,
+                action: "subscribe_instance",
+                request_id: request_id,
+            })
+        );
+    };
 
-        chatSocket.onmessage = function(event) {
-            const data = JSON.parse(event.data);
-            const chat = document.getElementById('chat');
+    chatSocket.onmessage = function (e) {
+        const data = JSON.parse(e.data);
+        console.log('RealTime', data)
+        switch (data.action) {
+            case "retrieve":
+                console.log(data.data)
+                document.getElementById('userId').innerText = data.data.host.first_name
+                for (let mess of data.data.messages) {
+                    console.log(mess.text)
+                }
 
-            const dateOptions = {hour: 'numeric', minute: 'numeric', hour12: true};
-            const datetime = new Date(data.datetime).toLocaleString('en', dateOptions);
-            const isMe = data.user === requestUser;
-            const source = isMe ? 'me' : 'other';
-            const name = isMe ? 'Me' : data.user;
+                //setRoom(old =>data.data);
+                //setMessages(old=>data.messages);
+                break;
+            case "create":
+                console.log(data.action, data.data)
+                //setMessages(old=>[...old, data])
+                break;
+            default:
+                break;
+        }
+    };
 
-            chat.innerHTML += '<div class="message ' + source + '">' +
-                            '<strong>' + name + '</strong> ' +
-                            '<span class="date">' + datetime + '</span><br>' +
-                            data.message + '</div>';
-            chat.scrollTop = chat.scrollHeight;
-        };
+    chatSocket.onclose = function (e) {
+        console.error('Chat socket closed unexpectedly');
+    };
 
-        chatSocket.onclose = function(event) {
-            console.error('Chat socket closed unexpectedly');
-        };
+    $('#chat-message-input').focus();
+    $('#chat-message-input').on('keyup', function (e) {
+        if (e.keyCode === 13) {  // enter, return
+            document.querySelector('#chat-message-submit').click();
+        }
+    });
+    $('#chat-message-submit').on('click', function (e) {
+        const message = $('#chat-message-input').val();
+        chatSocket.send(JSON.stringify({
+            data: {'message': message,
+            'first_name': userId,
+            'last_name': userLst},
+            action: "create_massage",
+            request_id: request_id,
+        }));
+        $('#chat-message-input').val('');
+    });
+</script>
 
-        const input = document.getElementById('chat-message-input');
-        const submitButton = document.getElementById('chat-message-submit');
-
-        submitButton.addEventListener('click', function(event) {
-            const message = input.value;
-            if(message) {
-            // send message in JSON format
-            chatSocket.send(JSON.stringify({'message': message}));
-            // clear input
-            input.value = '';
-            input.focus();
-            }
-        });
-
-        input.addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-            // cancel the default action, if needed
-            event.preventDefault();
-            // trigger click event on button
-            submitButton.click();
-            }
-        });
-
-        input.focus();
-        })
-    </script>
-  </body>
+</body>
 </html>
