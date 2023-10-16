@@ -128,8 +128,8 @@ CACHES = {
     }
 }
 
-# CACHES['default']['LOCATION'] = REDIS_URL
-# CHANNEL_LAYERS['default']['CONFIG']['hosts'] = [REDIS_URL]
+CACHES['default']['LOCATION'] = REDIS_URL
+CHANNEL_LAYERS['default']['CONFIG']['hosts'] = [REDIS_URL]
 
 
 # Database
