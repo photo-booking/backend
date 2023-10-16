@@ -31,17 +31,17 @@ SECRET_KEY = os.getenv('SECRET_KEY', default='DEFAULT_KEY')
 DEBUG = bool(os.environ.get('DEBUG', True))
 
 ALLOWED_HOSTS = [
-    '185.41.162.63',
+    '91.107.124.250',
     '127.0.0.1',
     'localhost',
-    'photo-market.acceleratorpracticum.ru',
+    'photomarket.sytes.net',
     'backend',
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://photo-market.acceleratorpracticum.ru',
-    'http://photo-market.acceleratorpracticum.ru',
-    'http://185.41.162.63',
+    'https://photomarket.sytes.net',
+    'http://photomarket.sytes.net',
+    'http://91.107.124.250',
 ]
 
 # CORS domains
