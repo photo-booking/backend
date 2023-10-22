@@ -58,8 +58,7 @@ def create_google_user(token):
 def get_data_vk(code):
     params_dict = {'client_id': {settings.SOCIAL_AUTH_VK_OAUTH2_KEY},
                    'client_secret': {settings.SOCIAL_AUTH_VK_OAUTH2_SECRET},
-                   'redirect_uri': 'https://photo-market.'
-                   + 'acceleratorpracticum.ru/sign-in',
+                   'redirect_uri': 'https://photomarket.sytes.net/sign-in',
                    'code': {code}
                    }
     url = 'https://oauth.vk.com/access_token'
