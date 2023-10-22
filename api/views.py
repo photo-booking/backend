@@ -95,7 +95,7 @@ class UserViewSet(DjoserUserViewSet):
                     context = {"user": user}
                     logging.info(f'context {context}')
                     to = get_user_email(user)
-                    url_reset = 'https://photo-market.acceleratorpracticum.ru/reset-password'
+                    url_reset = 'https://photomarket.sytes.net/reset-password'
                     secret = 'jwt_secret'
                     payload_email = {
                         'exp': datetime.now(timezone.utc) + timedelta(hours=1),
