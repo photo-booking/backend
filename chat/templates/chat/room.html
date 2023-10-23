@@ -5,11 +5,14 @@
   <title>Chat Rooms</title>
 </head>
 <body>
-<h4>Hi - <span id="{{ request.user }}"></span></h4>
-<textarea id="chat-log" cols="100" rows="20"></textarea><br>
-<input id="chat-message-input" type="text" size="100"><br>
-<input id="chat-message-submit" type="button" value="Отправить">
-<pre id="response"></pre>
+<h4>Привет - {{ request.user.first_name }}</h4>
+<h4>Это твой чат с - {{ current_user.first_name }}</h4>
+<div id="chat">
+</div>
+<div id="chat-input">
+  <input id="chat-message-input" type="text">
+  <input id="chat-message-submit" type="submit" value="Отправить">
+</div>
 <script
     src="https://code.jquery.com/jquery-3.6.0.min.js"
     integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
@@ -41,7 +44,81 @@
     const chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat/${chatId}/?token=34b08f70efc45c0d36ec10248167521def93d05a`);
     //const chatSocket = new WebSocket(url);
     console.log(chatSocket)
+    chatSocket.onmessage = function(event) {
+        console.log('User_name', userId)
+        const data = JSON.parse(event.data);
+        const chat = document.getElementById('chat');
+        const message = document.getElementById('chat-messages');
 
+        const dateOptions = {hour: 'numeric', minute: 'numeric', hour12: true};
+        const datetime = new Date(data.datetime).toLocaleString('en', dateOptions);
+        const isMe = data.user === userId;
+        const source = isMe ? 'me' : 'other';
+        const name = isMe ? 'Me' : data.user;
+
+
+        chat.innerHTML += '<div class="message ' + source + '">' +
+                        '<strong>' + name + '</strong> ' +
+                        '<span class="date">' + datetime + '</span><br>' +
+                        data.message + '</div>';
+        chat.scrollTop = chat.scrollHeight;
+    };
+    chatSocket.onclose = function(event) {
+        console.error('Chat socket closed unexpectedly');
+    };
+
+    const input = document.getElementById('chat-message-input');
+    const submitButton = document.getElementById('chat-message-submit');
+    {% comment %}
+        chatSocket.send(
+            JSON.stringify({
+                pk: room_pk,
+                'message': message,
+                action: "receive_messages",
+                request_id: request_id,
+            })
+
+        );
+        {% endcomment %}
+    submitButton.addEventListener('click', function(event) {
+        const message = input.value;
+        if(message) {
+        // send message in JSON format
+        chatSocket.send(JSON.stringify({'message': message}));
+        // clear input
+        input.value = '';
+        input.focus();
+        }
+    });
+    submitButton.addEventListener('click', function(event) {
+        const message = input.value;
+        if(message) {
+        // send message in JSON format
+        chatSocket.send(JSON.stringify({
+            data: {'message': message,
+            'first_name': userId,
+            'last_name': userLst},
+            action: "create_massage",
+            request_id: request_id,
+        }));;
+        console.log('message', message)
+        // clear input
+        input.value = '';
+        input.focus();
+        }
+    });
+    input.addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+        // cancel the default action, if needed
+        event.preventDefault();
+        // trigger click event on button
+        submitButton.click();
+        }
+    });
+
+    input.focus();
+
+    {% comment %}
     chatSocket.onopen = function (x) {
         console.log('Hihi', x)
         console.log('User_name', userId)
@@ -125,6 +202,7 @@
         }));
         $('#chat-message-input').val('');
     });
+    {% endcomment %}
 </script>
 
 </body>
