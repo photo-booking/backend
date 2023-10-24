@@ -18,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Repository Dispatch
-        uses: peter-evans/repository-dispatch@v2.1.1
+        uses: peter-evans/repository-dispatch@v2
         with:
           token: ${{ secrets.DISPATCH_HOOK_TOKEN }}
           repository: photo-booking/photo_booking_full
