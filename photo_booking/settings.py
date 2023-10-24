@@ -76,6 +76,7 @@ INSTALLED_APPS = [
     'properties.apps.PropertiesConfig',
     'orders.apps.OrdersConfig',
     'chat.apps.ChatConfig',
+    'reviews.apps.ReviewsConfig',
 ]
 
 MIDDLEWARE = [

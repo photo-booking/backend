@@ -18,11 +18,12 @@ from api.action_social import create_google_user, create_vk_user
 from api.paginators import (
     CatalogPagination,
     LimitPageNumberPagination,
-    PortfolioLimitPageNumberPagination,
+    PortfolioLimitPageNumberPagination, ReviewsPageNumberPagination,
 )
 from chat.models import Chat, Message
 from orders.models import Order, Raiting
 from properties.models import FeedbackProperty, Property, Room
+from reviews.models import Review
 from services.models import MediaFile, Service
 from users.models import User
 
@@ -39,7 +40,7 @@ from .serializers import (
     RaitingSerializer,
     RoomSerializer,
     ServiceSerializer,
-    SocialUserSerializer,
+    SocialUserSerializer, ServiceAuthorReviewsSerializer,
 )
 
 logging.basicConfig(
@@ -173,6 +174,34 @@ class UserViewSet(DjoserUserViewSet):
             except Exception as e:
                 logging.critical('Error:', exc_info=e)
                 return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    @action(methods=['GET', 'POST'],
+            detail=True)
+    def reviews(self, request, *args, **kwargs):
+        if request.method == 'GET':
+            user_id = self.kwargs.get('id')
+            queryset = Review.objects.filter(service_author=user_id)
+
+            page = self.paginate_queryset(queryset)
+
+            if page is not None:
+                serializer = ServiceAuthorReviewsSerializer(page, many=True)
+                return self.get_paginated_response(serializer.data)
+
+            serializer = ServiceAuthorReviewsSerializer(queryset, many=True)
+            return Response(serializer.data)
+
+        if request.method == 'POST':
+            data = request.data
+            serializer = ServiceAuthorReviewsSerializer(data=data)
+            if serializer.is_valid():
+                Review.objects.create(
+                    user_id=data.get('user'),
+                    service_author_id=data.get('service_author'),
+                    rating=data.get('rating'),
+                    description=data.get('description')
+                )
+            return Response(status=status.HTTP_201_CREATED)
 
 
 class MediafileViewSet(viewsets.ModelViewSet):
