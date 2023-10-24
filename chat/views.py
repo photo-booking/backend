@@ -23,7 +23,6 @@ def order_chat_room(request, order_id):
             order = user.orders.get(pk=order_id)  # ищем заказ
         except Exception:
             return HttpResponseNotFound(content="Чат не найден")
-        print(order.chat_id)
     except Exception:
         return HttpResponseForbidden(
             content="Пользователь не найден, передайте токен"
@@ -43,12 +42,14 @@ def index(request):
                 room = Chat.objects.get(
                     host=request.user, current_users=current_users
                 )
+                print(current_users)
                 return redirect('chat:room', room.pk)
             else:
                 room = Chat.objects.create(
                     host=request.user, name=(current_users.pk, request.user.pk)
                 )
                 room.current_users.add(current_users)
+                print(current_users)
                 return redirect('chat:room', room.pk)
     return render(
         request,
@@ -61,11 +62,13 @@ def index(request):
 
 def room(request, pk):
     room: Chat = get_object_or_404(Chat, pk=pk)
+    current_user = [i for i in room.current_users.all()]
     return render(
         request,
         'chat/room.html',
         {
             "room": room,
+            "current_user": current_user[0],
         },
     )
 

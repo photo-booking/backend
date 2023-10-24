@@ -21,27 +21,25 @@ from django.core.asgi import get_asgi_application
 from chat import routing
 from chat.middleware import JwtAuthMiddlewareStack
 
-# from chat.middleware import JwtAuthMiddlewareStack
-
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "photo_booking.settings")
 django.setup()
 
 # application = get_asgi_application()
 
-# application = ProtocolTypeRouter({
-#         "http": get_asgi_application(),
-#         'websocket': AllowedHostsOriginValidator(
-#             AuthMiddlewareStack(
-#                 URLRouter(routing.websocket_urlpatterns)
-#             )
-#         ),
-# })
-
 application = ProtocolTypeRouter(
     {
         "http": get_asgi_application(),
-        "websocket": JwtAuthMiddlewareStack(
+        'websocket': JwtAuthMiddlewareStack(
             URLRouter(routing.websocket_urlpatterns)
         ),
     }
 )
+
+# application = ProtocolTypeRouter(
+#     {
+#         "http": get_asgi_application(),
+#         "websocket": JwtAuthMiddlewareStack(
+#             URLRouter(routing.websocket_urlpatterns)
+#         ),
+#     }
+# )
