@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY requirements.txt .
 
-RUN apt-get install gcc
+RUN apt-get update && apt-get install -y gcc
 
 RUN pip install -r requirements.txt --no-cache-dir
 
