@@ -32,8 +32,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
     # получить сообщение из WebSocket
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        print(1111111)
-        print(text_data_json)
         message = text_data_json['message']
         now = timezone.now()
         chat: Chat = await self.get_chat(pk=self.id)

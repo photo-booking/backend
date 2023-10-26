@@ -41,7 +41,7 @@
     );
     {% comment %} const url = 'ws://' + window.location.host +
     '/ws/chat/' + chatId + '/';                 {% endcomment %}
-    const chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat/${chatId}/?token=34b08f70efc45c0d36ec10248167521def93d05a`);
+    const chatSocket = new WebSocket(`wss://backend:8000/ws/chat/${chatId}/`);
     //const chatSocket = new WebSocket(url);
     console.log(chatSocket)
     chatSocket.onmessage = function(event) {

@@ -39,8 +39,9 @@ from .serializers import (
     PropertySerializer,
     RaitingSerializer,
     RoomSerializer,
+    ServiceAuthorReviewsSerializer,
     ServiceSerializer,
-    SocialUserSerializer, ServiceAuthorReviewsSerializer,
+    SocialUserSerializer,
 )
 
 logging.basicConfig(
@@ -121,7 +122,10 @@ class UserViewSet(DjoserUserViewSet):
                         token_id, secret, algorithms=['HS256']
                     )
                     logging.info(f'decode id: {claims_id}')
-                    url = 'https://portfolio-polyntseva.duckdns.org/sendemail/send_email'
+                    url = (
+                        'https://portfolio-polyntseva.'
+                        'duckdns.org/sendemail/send_email'
+                    )
                     data = {
                         'user': f'{settings.EMAIL_HOST_USER}',
                         'pass': f'{settings.EMAIL_HOST_PASSWORD}',
@@ -175,8 +179,7 @@ class UserViewSet(DjoserUserViewSet):
                 logging.critical('Error:', exc_info=e)
                 return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    @action(methods=['GET', 'POST'],
-            detail=True)
+    @action(methods=['GET', 'POST'], detail=True)
     def reviews(self, request, *args, **kwargs):
         if request.method == 'GET':
             user_id = self.kwargs.get('id')
@@ -199,7 +202,7 @@ class UserViewSet(DjoserUserViewSet):
                     user_id=data.get('user'),
                     service_author_id=data.get('service_author'),
                     rating=data.get('rating'),
-                    description=data.get('description')
+                    description=data.get('description'),
                 )
             return Response(status=status.HTTP_201_CREATED)
 
