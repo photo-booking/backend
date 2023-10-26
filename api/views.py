@@ -18,7 +18,7 @@ from api.action_social import create_google_user, create_vk_user
 from api.paginators import (
     CatalogPagination,
     LimitPageNumberPagination,
-    PortfolioLimitPageNumberPagination
+    PortfolioLimitPageNumberPagination,
 )
 from chat.models import Chat, Message
 from orders.models import Order, Raiting
