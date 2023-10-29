@@ -18,7 +18,8 @@ from api.action_social import create_google_user, create_vk_user
 from api.paginators import (
     CatalogPagination,
     LimitPageNumberPagination,
-    PortfolioLimitPageNumberPagination
+    PortfolioLimitPageNumberPagination,
+    ReviewsPageNumberPagination
 )
 from chat.models import Chat, Message
 from orders.models import Order, Raiting
@@ -175,8 +176,10 @@ class UserViewSet(DjoserUserViewSet):
                 logging.critical('Error:', exc_info=e)
                 return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    @action(methods=['GET', 'POST'],
-            detail=True)
+    @action(detail=True,
+            methods=['GET', 'POST'],
+            pagination_class=ReviewsPageNumberPagination
+            )
     def reviews(self, request, *args, **kwargs):
         if request.method == 'GET':
             user_id = self.kwargs.get('id')
@@ -195,14 +198,15 @@ class UserViewSet(DjoserUserViewSet):
             data = request.data
             serializer = ServiceAuthorReviewsSerializer(data=data)
             if serializer.is_valid():
-                Review.objects.create(
-                    user_id=data.get('user'),
-                    service_author_id=data.get('service_author'),
-                    rating=data.get('rating'),
-                    description=data.get('description')
-                )
-            return Response(status=status.HTTP_201_CREATED)
-
+                # Review.objects.create(
+                #     user_id=data.get('user'),
+                #     service_author_id=data.get('service_author'),
+                #     rating=data.get('rating'),
+                #     description=data.get('description')
+                # )
+                serializer.save()
+                return Response(status=status.HTTP_201_CREATED)
+            return Response(serializer.errors)
 
 class MediafileViewSet(viewsets.ModelViewSet):
     queryset = MediaFile.objects.all()

@@ -45,6 +45,17 @@ class ShortUserSerializer(serializers.ModelSerializer):
         )
 
 
+class ShortUserReviewsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            'id',
+            'first_name',
+            'last_name',
+            'profile_photo',
+        )
+
+
 class CountUserSerializer(serializers.Serializer):
     total_spec_user = serializers.SerializerMethodField()
     photo_user = serializers.SerializerMethodField()
@@ -473,8 +484,22 @@ class CustomDeleteUserSerializer(serializers.Serializer):
 
 
 class ServiceAuthorReviewsSerializer(serializers.ModelSerializer):
+    user = ShortUserReviewsSerializer(read_only=True)
 
     class Meta:
         model = Review
-        fields = ('user', 'service_author',
+        fields = ('id', 'user', 'service_author',
                   'rating', 'description', 'post_date')
+
+    def create(self, validated_data):
+        # if self.user:
+        author = validated_data.get('service_author'),
+        rating = validated_data.get('rating'),
+        description = validated_data.get('description')
+        Review.objects.create(
+            user=self.user,
+            service_author=author,
+            rating=rating,
+            description=description
+        )
+        return validated_data
