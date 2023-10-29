@@ -1,6 +1,14 @@
 version: '3.3'
 services:
 
+  cache:
+    image: redis:7.0.4
+    restart: always
+    volumes:
+      - ./data/cache:/data
+    networks:
+      - db_network
+
   db:
     image: postgres:13.10-alpine
     restart: always
@@ -9,8 +17,11 @@ services:
     env_file:
       - ./.env
 
+    networks:
+      - db_network
+
   backend:
-    image: 4aiz/photo_market_backend:latest
+    image: leontiev93/photo_boking_backend:latest
     restart: always
     volumes:
       - static_value:/app/static/
@@ -19,16 +30,18 @@ services:
       - "8000:8000"
     depends_on:
       - db
+      - cache
     env_file:
       - ./.env
+    command: Bash Start.sh
+    netWorks:
+      - web_network
+      - db_network
 
   frontend:
-    image: geroy4ik/photo_market_frontend_dev:latest
-    env_file: .env
-    command: cp -r /app/ ../frontend/
+    image: leontiev93/photo_boking_frontend:latest
     volumes:
-      - frontend:/app/
-      - static_value:/app/static/
+      - ../frontend/:/app/result_build/
 
   nginx:
     image: nginx:1.19.3
@@ -40,15 +53,23 @@ services:
       - ./data/certbot/conf:/etc/nginx/ssl
       - ./data/certbot/www:/var/www/certbot
       - /etc/letsencrypt/:/etc/letsencrypt/
-      - frontend:/usr/share/nginx/html/
       - static_value:/var/html/static/
       - media_value:/var/html/media/
+      - ../frontend/build:/usr/share/nginx/html/
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    networks:
+      - web_network
+
     depends_on:
       - backend
 
+networks:
+  web_network:
+    driver: bridge
+  db_network:
+    driver: bridge
+
 volumes:
-  frontend:
   static_value:
   media_value:
   pg_data:
