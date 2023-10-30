@@ -12,6 +12,6 @@ RUN apt-get update && apt-get install -y vim
 
 COPY . .
 
-#CMD ["/app/start.sh"]
-CMD ["uwsgi", "-d", "--ini", "uwsgi.ini" && "daphne", "-b", "0.0.0.0", "-p", "8002", "photo_booking.asgi:application"]
+CMD ["uwsgi", "--ini", "uwsgi.ini"]
+#CMD ["uwsgi", "--ini", "uwsgi.ini" && "daphne", "-b", "0.0.0.0", "-p", "8002", "photo_booking.asgi:application"]
 #CMD ["gunicorn", "photo_booking.wsgi:application", "--bind", "0:8000"]
