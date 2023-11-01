@@ -22,7 +22,7 @@ from chat import routing
 from chat.middleware import JwtAuthMiddlewareStack
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "photo_booking.settings")
-django.setup()
+#django.setup()
 
 # application = get_asgi_application()
 
