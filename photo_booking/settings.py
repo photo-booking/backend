@@ -200,8 +200,6 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 20,
 }
 
-DJANGO_CHANNELS_REST_API = {}
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
