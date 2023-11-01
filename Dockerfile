@@ -11,7 +11,7 @@ RUN pip install -r requirements.txt --no-cache-dir
 RUN apt-get update && apt-get install -y vim
 
 COPY . .
-
+RUN chmod +x  ./start.sh
 CMD ["uwsgi", "--ini", "uwsgi.ini"]
 #CMD ["uwsgi", "--ini", "uwsgi.ini" && "daphne", "-b", "0.0.0.0", "-p", "8002", "photo_booking.asgi:application"]
 #CMD ["gunicorn", "photo_booking.wsgi:application", "--bind", "0:8000"]
