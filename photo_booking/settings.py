@@ -37,7 +37,7 @@ ALLOWED_HOSTS = [
     'photomarket.sytes.net',
     'backend',
     '91.107.124.250',
-    'photomarket.sytes.net'
+    'photomarket.sytes.net',
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -55,6 +55,7 @@ AUTH_USER_MODEL = 'users.User'
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
