@@ -76,5 +76,5 @@ zope.interface==5.4.0
 Deprecated==1.2.14
 social-auth-app-django==5.2.0
 social-auth-core==4.4.2
-twisted-iocpsupport==1.0.2
+#twisted-iocpsupport==1.0.2
 wrapt==1.15.0
