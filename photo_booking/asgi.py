@@ -7,10 +7,10 @@ For more information on this file, see
 https://docs.djangoproject.com/en/4.2/howto/deployment/asgi/
 """
 
-
 import os
-
 import django
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "photo_booking.settings")
+django.setup()
 
 # from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
@@ -22,8 +22,7 @@ from django.core.asgi import get_asgi_application
 from chat import routing
 from chat.middleware import JwtAuthMiddlewareStack
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "photo_booking.settings")
-django.setup()
+
 settings.configure()
 # application = get_asgi_application()
 
