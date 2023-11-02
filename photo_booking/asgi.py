@@ -23,7 +23,6 @@ from chat import routing
 from chat.middleware import JwtAuthMiddlewareStack
 
 
-settings.configure()
 # application = get_asgi_application()
 
 application = ProtocolTypeRouter(
