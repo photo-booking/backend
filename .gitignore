@@ -164,6 +164,7 @@ cython_debug/
 
 # Media
 media/
+static/
 frontend-one/
 .frontend-one/
 ./frontend-one/

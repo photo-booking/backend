@@ -4,7 +4,7 @@ from chat.models import Chat, Message
 
 
 @admin.register(Chat)
-class RoomAdmin(admin.ModelAdmin):
+class ChatAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'host', '_current_users')
     search_fields = ('name', 'host', 'current_users')
     list_filter = (
