@@ -1,75 +1,15 @@
 version: '3.3'
 services:
 
-  cache:
-    image: redis:7.0.4
-    restart: always
-    volumes:
-      - ./data/cache:/data
-    networks:
-      - db_network
-
   db:
     image: postgres:13.10-alpine
     restart: always
+    ports:
+      - "54321:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data/
     env_file:
       - ./.env
 
-    networks:
-      - db_network
-
-  backend:
-    image: leontiev93/photo_boking_backend:latest
-    restart: always
-    volumes:
-      - static_value:/app/static/
-      - media_value:/app/media/
-    ports:
-      - "8000:8000"
-    depends_on:
-      - db
-      - cache
-    env_file:
-      - ./.env
-    command: Bash Start.sh
-    netWorks:
-      - web_network
-      - db_network
-
-  frontend:
-    image: leontiev93/photo_boking_frontend:latest
-    volumes:
-      - ../frontend/:/app/result_build/
-
-  nginx:
-    image: nginx:1.19.3
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
-      - ./data/certbot/conf:/etc/nginx/ssl
-      - ./data/certbot/www:/var/www/certbot
-      - /etc/letsencrypt/:/etc/letsencrypt/
-      - static_value:/var/html/static/
-      - media_value:/var/html/media/
-      - ../frontend/build:/usr/share/nginx/html/
-    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
-    networks:
-      - web_network
-
-    depends_on:
-      - backend
-
-networks:
-  web_network:
-    driver: bridge
-  db_network:
-    driver: bridge
-
 volumes:
-  static_value:
-  media_value:
   pg_data:

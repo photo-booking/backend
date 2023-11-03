@@ -9,14 +9,14 @@ class Chat(models.Model):
         max_length=255, null=False, blank=False, unique=True
     )
     host = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="rooms"
+        User, on_delete=models.CASCADE, related_name="chats"
     )
     current_users = models.ManyToManyField(
         User, related_name="current_rooms", blank=True
     )
 
     def __str__(self):
-        return f"Room({self.name} {self.host})"
+        return f"Chat({self.name} {self.host})"
 
 
 class Message(models.Model):

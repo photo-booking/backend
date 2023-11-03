@@ -113,20 +113,29 @@ class MediafileSerializer(serializers.ModelSerializer):
         read_only_fields = ('media_type',)
 
     def create(self, validated_data):
-        authors = validated_data.get('authors')
+        author = validated_data.get('author')
         title = validated_data.get('title')
-        image = validated_data.get('image')
-        link = validated_data.get('link')
+        photo = validated_data.get('photo')
+        photo = (
+            validated_data.get('photo')
+            if validated_data.get('photo') is not None
+            else ""
+        )
+        link = (
+            validated_data.get('link')
+            if validated_data.get('link') is not None
+            else ""
+        )
         is_main_photo = validated_data.get('is_main_photo')
         media_type = (
             MediaFile.MediaType.PHOTO.value
-            if image
+            if photo
             else MediaFile.MediaType.VIDEO.value
         )
         media_file = MediaFile.objects.create(
-            authors=authors,
+            author=author,
             title=title,
-            image=image,
+            photo=photo,
             link=link,
             media_type=media_type,
             is_main_photo=is_main_photo,
@@ -134,9 +143,9 @@ class MediafileSerializer(serializers.ModelSerializer):
         return media_file
 
     def validate(self, attrs):
-        image = attrs.get('image')
+        photo = attrs.get('photo')
         video_link = attrs.get('link')
-        if (image and video_link) or (not image and not video_link):
+        if (photo and video_link) or (not photo and not video_link):
             raise serializers.ValidationError(
                 detail='Укажите либо файл фотографии либо ссылку на видео',
                 code=status.HTTP_400_BAD_REQUEST,
@@ -459,9 +468,7 @@ class CustomPasswordResetConfirmSerializer(PasswordSerializer):
 class CustomDeleteUserSerializer(serializers.Serializer):
     token = serializers.IntegerField()
 
-    default_error_messages = {
-        "invalid_data": "Неверные данные для удаления"
-    }
+    default_error_messages = {"invalid_data": "Неверные данные для удаления"}
 
     def validate(self, value):
         user_data = User.objects.get(pk=value)
@@ -473,8 +480,12 @@ class CustomDeleteUserSerializer(serializers.Serializer):
 
 
 class ServiceAuthorReviewsSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Review
-        fields = ('user', 'service_author',
-                  'rating', 'description', 'post_date')
+        fields = (
+            'user',
+            'service_author',
+            'rating',
+            'description',
+            'post_date',
+        )
