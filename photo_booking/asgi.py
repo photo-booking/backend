@@ -8,6 +8,14 @@ https://docs.djangoproject.com/en/4.2/howto/deployment/asgi/
 """
 
 import os
+import django
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "photo_booking.settings")
+django.setup()
+
+import django
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "photo_booking.settings")
+django.setup()
 
 import django
 
