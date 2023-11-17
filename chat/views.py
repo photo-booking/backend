@@ -32,24 +32,34 @@ def order_chat_room(request, order_id):
 
 def index(request):
     users = User.objects.all()
+    token = request.headers.get('Authorization').split(" ")[1]
+    user = get_object_or_404(Token, key=token).user
     if request.method == "POST":
         userpk = request.POST.get("user_pk", None)
         current_users = User.objects.get(pk=userpk)
         if current_users:
             if Chat.objects.filter(
-                host=request.user, current_users=current_users
+                host=user.pk, current_users=current_users
             ).exists():
                 room = Chat.objects.get(
-                    host=request.user, current_users=current_users
+                    host=user.pk, current_users=current_users
                 )
-                print(current_users)
+                return redirect('chat:room', room.pk)
+            elif Chat.objects.filter(
+                host=current_users, current_users=user.pk
+            ).exists():
+                print(777)
+                room = Chat.objects.get(
+                    host=current_users, current_users=user.pk
+                )
+                print(888)
+                print(print(room))
                 return redirect('chat:room', room.pk)
             else:
                 room = Chat.objects.create(
-                    host=request.user, name=(current_users.pk, request.user.pk)
+                    host=user, name=(current_users.pk, user.pk)
                 )
                 room.current_users.add(current_users)
-                print(current_users)
                 return redirect('chat:room', room.pk)
     return render(
         request,
@@ -62,13 +72,13 @@ def index(request):
 
 def room(request, pk):
     room: Chat = get_object_or_404(Chat, pk=pk)
-    current_user = [i for i in room.current_users.all()]
     return render(
         request,
         'chat/room.html',
         {
+            "user": room.host,
             "room": room,
-            "current_user": current_user[0],
+            "current_user": room.current_users.all()[0],
         },
     )
 

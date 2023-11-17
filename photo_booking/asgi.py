@@ -17,6 +17,11 @@ import django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "photo_booking.settings")
 django.setup()
 
+import django
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "photo_booking.settings")
+django.setup()
+
 # from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
 

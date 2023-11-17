@@ -5,8 +5,8 @@
   <title>Chat Rooms</title>
 </head>
 <body>
-<h4>Привет - {{ request.user.first_name }}</h4>
-<h4>Это твой чат с - {{ current_user.first_name }}</h4>
+<h4>Привет !</h4>
+<h4>Это твой чат {{ user.first_name }} с - {{ current_user.first_name }}</h4>
 <div id="chat">
 </div>
 <div id="chat-input">
@@ -41,7 +41,8 @@
     );
     {% comment %} const url = 'ws://' + window.location.host +
     '/ws/chat/' + chatId + '/';                 {% endcomment %}
-    const chatSocket = new WebSocket(`wss://backend:8000/ws/chat/${chatId}/`);
+    const chatSocket = new WebSocket(`wss://https://photomarket.sytes.net/ws/chat/${chatId}/`);
+    //const chatSocket = new WebSocket(`ws://127.0.0.1:8000/ws/chat/${chatId}/`);
     //const chatSocket = new WebSocket(url);
     console.log(chatSocket)
     chatSocket.onmessage = function(event) {
