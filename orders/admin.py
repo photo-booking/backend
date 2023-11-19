@@ -6,7 +6,6 @@ from .models import Order, Raiting
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     model = Order
-    filter_horizontal = ('users',)
     list_display = (
         'name',
         'cost',
@@ -14,14 +13,16 @@ class OrderAdmin(admin.ModelAdmin):
         'completion_date',
         'status',
         'service',
-        'chat',
+        'customer_user',
+        'executor_user',
     )
     search_fields = (
         'name',
         'cost',
         'date',
         'status',
-        'users',
+        'customer_user',
+        'executor_user',
         'service',
     )
     list_filter = (
@@ -29,7 +30,8 @@ class OrderAdmin(admin.ModelAdmin):
         'cost',
         'date',
         'status',
-        'users',
+        'customer_user',
+        'executor_user',
         'service',
     )
     empty_value_display = '-пусто-'
@@ -38,14 +40,15 @@ class OrderAdmin(admin.ModelAdmin):
 @admin.register(Raiting)
 class RaitingAdmin(admin.ModelAdmin):
     model = Raiting
-    filter_horizontal = ('user',)
     list_display = (
         'order',
         'raiting',
+        'customer_user',
+        'executor_user',
     )
-    search_fields = ('user', 'order')
+    search_fields = ('executor_user', 'order')
     list_filter = (
         'order',
-        'user',
+        'executor_user',
     )
     empty_value_display = '-пусто-'
