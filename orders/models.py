@@ -64,6 +64,10 @@ class Raiting(models.Model):
     raiting = models.PositiveSmallIntegerField(
         verbose_name='Оценка исполнителя', blank=True, null=True
     )
+    REQUIRED_FIELDS = (
+        'order', 'customer_user',
+        'executor_user', 'raiting'
+    )
 
     class Meta:
         ordering = ('order',)

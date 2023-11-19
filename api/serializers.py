@@ -370,7 +370,6 @@ class ChatSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    service = serializers.StringRelatedField(read_only=True)
 
     class Meta:
         model = Order
@@ -400,8 +399,12 @@ class MessageSerializer(serializers.ModelSerializer):
 
 
 class RaitingSerializer(serializers.ModelSerializer):
-    customer_user = serializers.StringRelatedField(read_only=True)
-    executor_user = serializers.StringRelatedField(read_only=True)
+    customer_user = serializers.SlugRelatedField(
+        queryset=User.objects.all(), slug_field='email'
+    )
+    executor_user = serializers.SlugRelatedField(
+        queryset=User.objects.all(), slug_field='email'
+    )
 
     class Meta:
         model = Raiting
