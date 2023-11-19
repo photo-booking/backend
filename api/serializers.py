@@ -371,8 +371,6 @@ class ChatSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     service = serializers.StringRelatedField(read_only=True)
-    room = serializers.StringRelatedField(read_only=True)
-    users = serializers.StringRelatedField(read_only=True, many=True)
 
     class Meta:
         model = Order
@@ -382,9 +380,9 @@ class OrderSerializer(serializers.ModelSerializer):
             'date',
             'completion_date',
             'status',
-            'users',
+            'customer_user',
+            'executor_user',
             'service',
-            'room',
         )
 
 
@@ -402,13 +400,15 @@ class MessageSerializer(serializers.ModelSerializer):
 
 
 class RaitingSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField(read_only=True, many=True)
+    customer_user = serializers.StringRelatedField(read_only=True)
+    executor_user = serializers.StringRelatedField(read_only=True)
 
     class Meta:
         model = Raiting
         fields = (
             'order',
-            'user',
+            'customer_user',
+            'executor_user',
             'raiting',
         )
 
@@ -466,12 +466,12 @@ class CustomPasswordResetConfirmSerializer(PasswordSerializer):
 
 
 class CustomDeleteUserSerializer(serializers.Serializer):
-    token = serializers.IntegerField()
+    user_id = serializers.IntegerField()
 
     default_error_messages = {"invalid_data": "Неверные данные для удаления"}
 
     def validate(self, value):
-        user_data = User.objects.get(pk=value)
+        user_data = User.objects.get(pk=value['user_id'])
         user = self.context['request'].user
         if user_data == user:
             return super().validate(value)

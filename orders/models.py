@@ -1,14 +1,14 @@
 from django.conf import settings
 from django.db import models
 
-from chat.models import Chat
 from services.models import Service
 from users.models import User
 
 
 class Order(models.Model):
     name = models.CharField(
-        verbose_name='Название заказа', max_length=settings.MAX_LEN_NAME
+        verbose_name='Название заказа',
+        max_length=settings.MAX_LEN_NAME
     )
     cost = models.PositiveIntegerField(
         verbose_name='Стоимость заказа',
@@ -18,8 +18,13 @@ class Order(models.Model):
     status = models.BooleanField(
         verbose_name='Статус выполнения заказа', default=False
     )
-    users = models.ManyToManyField(
-        User, verbose_name='Участники сделки', related_name='orders'
+    customer_user = models.ForeignKey(
+        User, verbose_name='Заказчик',
+        related_name='customer_orders', on_delete=models.CASCADE,
+    )
+    executor_user = models.ForeignKey(
+        User, verbose_name='Исполнитель заказа',
+        related_name='executor_orders', on_delete=models.CASCADE,
     )
     service = models.ForeignKey(
         Service,
@@ -27,16 +32,13 @@ class Order(models.Model):
         related_name='orders',
         on_delete=models.CASCADE,
     )
-    chat = models.ForeignKey(
-        Chat,
-        verbose_name='Чат',
-        related_name='orders',
-        on_delete=models.CASCADE,
+    REQUIRED_FIELDS = (
+        'name', 'cost', 'customer_users',
+        'executor_user', 'completion_date', 'service'
     )
-    REQUIRED_FIELDS = ('name', 'cost', 'completion_date', 'phone', 'city')
 
     class Meta:
-        ordering = ('name',)
+        ordering = ('date',)
         verbose_name = 'Заказ'
         verbose_name_plural = 'Заказы'
 
@@ -47,12 +49,17 @@ class Order(models.Model):
 class Raiting(models.Model):
     order = models.ForeignKey(
         Order,
-        verbose_name='',
+        verbose_name='Название заказа',
         related_name='raitings',
         on_delete=models.CASCADE,
     )
-    user = models.ManyToManyField(
-        User, verbose_name='Участники рейтинга', related_name='raitings'
+    customer_user = models.ForeignKey(
+        User, verbose_name='Заказчик',
+        related_name='customer_raitings', on_delete=models.CASCADE,
+    )
+    executor_user = models.ForeignKey(
+        User, verbose_name='Заказчик',
+        related_name='executor_raitings', on_delete=models.CASCADE,
     )
     raiting = models.PositiveSmallIntegerField(
         verbose_name='Оценка исполнителя', blank=True, null=True
