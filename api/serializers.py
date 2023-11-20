@@ -103,6 +103,7 @@ class MediafileSerializer(serializers.ModelSerializer):
     class Meta:
         model = MediaFile
         fields = (
+            'id',
             'authors',
             'photo',
             'link',
@@ -191,7 +192,7 @@ class UserSerializer(serializers.ModelSerializer):
         )
 
     def get_mediafiles(self, user, *args, **kwargs):
-        foto = user.mediafiles.all()[:6]
+        foto = user.mediafiles.all()
         if foto is not None:
             return MediafileSerializer(foto, many=True).data
 
@@ -370,6 +371,12 @@ class ChatSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
+    customer_user = serializers.SlugRelatedField(
+        queryset=User.objects.all(), slug_field='email'
+    )
+    executor_user = serializers.SlugRelatedField(
+        queryset=User.objects.all(), slug_field='email'
+    )
 
     class Meta:
         model = Order
