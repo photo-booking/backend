@@ -5,12 +5,12 @@ from rest_framework import serializers
 
 
 def regex_test(value):
-    """Проверяет на соотвествие введенных данных и возвращает True/False"""
+    """Проверяет на соотвествие введенных данных и возвращает True/False."""
     return bool(re.match('^[a-zA-Z0-9.@+-_]+$', value))
 
 
 def output_incorrect_symbols(value):
-    """Возвращает список из некоректно веденных символов"""
+    """Возвращает список из некоректно веденных символов."""
     incorrect_symbols = []
     for letter in list(value):
         if not re.match('^[a-zA-Z0-9.@+-_]+$', letter):

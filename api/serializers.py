@@ -15,7 +15,6 @@ from rest_framework.authtoken.models import Token
 from chat.models import Chat, Message
 from orders.models import Order, Raiting
 from properties.models import FeedbackProperty, Property, Room
-from reviews.models import Review
 from services.models import MediaFile, Service, Tag
 from users.models import User
 
@@ -95,14 +94,14 @@ class ServiceSerializer(serializers.ModelSerializer):
 
 
 class MediafileSerializer(serializers.ModelSerializer):
-    authors = serializers.SerializerMethodField()
+    author = serializers.SerializerMethodField()
     photo = Base64ImageField(allow_null=True)
 
     class Meta:
         model = MediaFile
         fields = (
             'id',
-            'authors',
+            'author',
             'photo',
             'link',
             'title',
@@ -118,12 +117,12 @@ class MediafileSerializer(serializers.ModelSerializer):
         photo = (
             validated_data.get('photo')
             if validated_data.get('photo') is not None
-            else ""
+            else ''
         )
         link = (
             validated_data.get('link')
             if validated_data.get('link') is not None
-            else ""
+            else ''
         )
         is_main_photo = validated_data.get('is_main_photo')
         media_type = (
@@ -151,7 +150,7 @@ class MediafileSerializer(serializers.ModelSerializer):
             )
         return super().validate(attrs)
 
-    def get_authors(self, media, *args, **kwargs):
+    def get_author(self, media, *args, **kwargs):
         authors = media.author
         if authors is not None:
             return ShortUserSerializer(authors).data
@@ -379,6 +378,7 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = (
+            'id',
             'name',
             'cost',
             'date',
@@ -485,15 +485,3 @@ class CustomDeleteUserSerializer(serializers.Serializer):
             return super().validate(value)
         else:
             self.fail("invalid_data")
-
-
-class ServiceAuthorReviewsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Review
-        fields = (
-            'user',
-            'service_author',
-            'rating',
-            'description',
-            'post_date',
-        )

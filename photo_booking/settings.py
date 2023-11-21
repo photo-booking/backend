@@ -77,7 +77,6 @@ INSTALLED_APPS = [
     'properties.apps.PropertiesConfig',
     'orders.apps.OrdersConfig',
     'chat.apps.ChatConfig',
-    'reviews.apps.ReviewsConfig',
 ]
 
 MIDDLEWARE = [
@@ -250,6 +249,9 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
 # Vkontakte
 SOCIAL_AUTH_VK_OAUTH2_KEY = os.getenv('VK_APP_ID')
 SOCIAL_AUTH_VK_OAUTH2_SECRET = os.getenv('VK_API_SECRET')
+SOCIAL_AUTH_VK_REDIRICT_URL = 'https://photomarket.sytes.net/sign-in'
+SOCIAL_AUTH_VK_URL = 'https://oauth.vk.com/access_token'
+SOCIAL_AUTH_VK_API_URL = 'https://api.vk.com/method/users.get'
 
 # Отправка писем для восстановления пароля smtp
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
