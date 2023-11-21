@@ -25,22 +25,16 @@ def get_data_google(token):
 def create_google_user(token):
     try:
         data_user = get_data_google(token=token)
-        logging.info(f'data user - {data_user}')
+        logging.info(f'Данные юзера из гугл аккаунта - {data_user}')
         email_user = data_user.get('email')
         first_name = data_user.get('given_name')
         last_name = data_user.get('family_name')
-        profile_photo = data_user.get('picture')
     except ValueError:
         return {'error': 'Неверный токен, доступ к аккаунту гугл запрещен'}
     else:
         if User.objects.filter(email=email_user).exists():
             return User.objects.filter(email=email_user)
         else:
-            logging.info(
-                f'data user: {email_user},'
-                f'{first_name}, {last_name} '
-                f'{profile_photo}'
-            )
             if last_name is None:
                 last_name = ' '
             elif first_name is None:
@@ -49,7 +43,6 @@ def create_google_user(token):
                 email=email_user,
                 first_name=first_name,
                 last_name=last_name,
-                profile_photo=profile_photo,
                 is_client=True,
                 password=generation_password())
             return User.objects.filter(email=email_user)
@@ -58,13 +51,13 @@ def create_google_user(token):
 def get_data_vk(code):
     params_dict = {'client_id': {settings.SOCIAL_AUTH_VK_OAUTH2_KEY},
                    'client_secret': {settings.SOCIAL_AUTH_VK_OAUTH2_SECRET},
-                   'redirect_uri': 'https://photomarket.sytes.net/sign-in',
+                   'redirect_uri': {settings.SOCIAL_AUTH_VK_REDIRICT_URL},
                    'code': {code}
                    }
-    url = 'https://oauth.vk.com/access_token'
+    url = {settings.SOCIAL_AUTH_VK_URL}
     first_response = requests.get(url, params=params_dict)
     token_data = first_response.json()
-    logging.info(f'dates from first token {token_data}')
+    logging.info(f'Данные после первого запроса {token_data}')
     user_id = token_data.get('user_id')
     access_token = token_data.get('access_token')
     email = token_data.get('email')
@@ -75,16 +68,15 @@ def get_data_vk(code):
         'v': '5.131',
     }
 
-    url_vk = 'https://api.vk.com/method/users.get'
+    url_vk = {settings.SOCIAL_AUTH_VK_API_URL}
     final_responce = requests.get(url_vk, params=params_dict_vk)
-    logging.info(f'dates from last responce {final_responce.json()}')
+    logging.info(f'Данные аккаунта ВК: {final_responce.json()}, почта {email}')
     return final_responce.json(), email
 
 
 def create_vk_user(code):
     try:
         user_responce, email = get_data_vk(code)
-        logging.info(f'Получили данные из ВК {user_responce}, почта: {email}')
     except ValueError:
         return {'error': 'Неверный токен, доступ к аккаунту гугл запрещен'}
     else:
@@ -92,7 +84,7 @@ def create_vk_user(code):
             return User.objects.filter(email=email)
         else:
             data_user = user_responce.get('response')
-            logging.info(f'data user - {data_user}')
+            logging.info(f'Данные юзера - {data_user}')
             for data in data_user:
                 first_name = data.get('first_name')
                 last_name = data.get('last_name')
