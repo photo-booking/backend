@@ -33,7 +33,7 @@ class Order(models.Model):
         on_delete=models.CASCADE,
     )
     REQUIRED_FIELDS = (
-        'name', 'cost', 'customer_users',
+        'name', 'cost', 'date', 'customer_users',
         'executor_user', 'completion_date', 'service'
     )
 

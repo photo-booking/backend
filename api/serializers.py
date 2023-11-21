@@ -79,6 +79,7 @@ class ServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Service
         fields = (
+            'id',
             'authors',
             'name_service',
             'image_service',
@@ -97,14 +98,14 @@ class ServiceSerializer(serializers.ModelSerializer):
 
 
 class MediafileSerializer(serializers.ModelSerializer):
-    authors = serializers.SerializerMethodField()
+    author = serializers.SerializerMethodField()
     photo = Base64ImageField(allow_null=True)
 
     class Meta:
         model = MediaFile
         fields = (
             'id',
-            'authors',
+            'author',
             'photo',
             'link',
             'title',
@@ -120,12 +121,12 @@ class MediafileSerializer(serializers.ModelSerializer):
         photo = (
             validated_data.get('photo')
             if validated_data.get('photo') is not None
-            else ""
+            else ''
         )
         link = (
             validated_data.get('link')
             if validated_data.get('link') is not None
-            else ""
+            else ''
         )
         is_main_photo = validated_data.get('is_main_photo')
         media_type = (
@@ -153,7 +154,7 @@ class MediafileSerializer(serializers.ModelSerializer):
             )
         return super().validate(attrs)
 
-    def get_authors(self, media, *args, **kwargs):
+    def get_author(self, media, *args, **kwargs):
         authors = media.author
         if authors is not None:
             return ShortUserSerializer(authors).data
@@ -381,6 +382,7 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = (
+            'id',
             'name',
             'cost',
             'date',
