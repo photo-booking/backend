@@ -15,7 +15,6 @@ from rest_framework.authtoken.models import Token
 from chat.models import Chat, Message
 from orders.models import Order, Raiting
 from properties.models import FeedbackProperty, Property, Room
-from reviews.models import Review
 from services.models import MediaFile, Service, Tag
 from users.models import User
 
@@ -489,15 +488,3 @@ class CustomDeleteUserSerializer(serializers.Serializer):
             return super().validate(value)
         else:
             self.fail("invalid_data")
-
-
-class ServiceAuthorReviewsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Review
-        fields = (
-            'user',
-            'service_author',
-            'rating',
-            'description',
-            'post_date',
-        )
