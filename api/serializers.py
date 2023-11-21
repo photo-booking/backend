@@ -71,15 +71,18 @@ class CountUserSerializer(serializers.Serializer):
 
 
 class ServiceSerializer(serializers.ModelSerializer):
+    author = ShortUserSerializer()
     image_service = Base64ImageField(required=False, allow_null=True)
-    tag = TagsSerializer(read_only=True, many=True)
-    authors = serializers.SerializerMethodField()
-    due_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M")
+    tag = TagsSerializer(many=True)
+    due_date = serializers.DateTimeField(
+        format="%Y-%m-%d %H:%M", read_only=True
+    )
 
     class Meta:
         model = Service
         fields = (
-            'authors',
+            'pk',
+            'author',
             'name_service',
             'image_service',
             'cost_service',
@@ -89,11 +92,6 @@ class ServiceSerializer(serializers.ModelSerializer):
             'min_duration',
             'tag',
         )
-
-    def get_authors(self, services, *args, **kwargs):
-        authors = services.author.all()
-        if authors is not None:
-            return ShortUserSerializer(authors, many=True).data
 
 
 class MediafileSerializer(serializers.ModelSerializer):
