@@ -22,10 +22,11 @@ class Tag(models.Model):
 
 
 class Service(models.Model):
-    author = models.ManyToManyField(
+    author = models.ForeignKey(
         'users.User',
         verbose_name='Автор',
         related_name='services',
+        on_delete=models.CASCADE,
     )
     name_service = models.CharField(
         verbose_name='Название услуги', max_length=settings.MAX_LEN_NAME

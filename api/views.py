@@ -7,7 +7,7 @@ from django.conf import settings
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.compat import get_user_email
 from djoser.views import UserViewSet as DjoserUserViewSet
-from rest_framework import status, viewsets
+from rest_framework import serializers, status, viewsets
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.filters import SearchFilter
@@ -21,9 +21,10 @@ from api.paginators import (
     PortfolioLimitPageNumberPagination,
 )
 from chat.models import Chat, Message
+from data import tags
 from orders.models import Order, Raiting
 from properties.models import FeedbackProperty, Property, Room
-from services.models import MediaFile, Service
+from services.models import MediaFile, Service, Tag
 from users.models import User
 
 from .filters import UsersFilter
@@ -206,8 +207,40 @@ class ServiceViewSet(viewsets.ModelViewSet):
     queryset = Service.objects.all()
     serializer_class = ServiceSerializer
 
-    def perform_create(self, serializer):
-        serializer.save(due_date=datetime.now())
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        try:
+            name_service = data['name_service']
+            cost_service = data['cost_service']
+            description_service = data['description_service']
+            order_delivery_time = data['order_delivery_time']
+            #            image_service=data['image_service']
+            min_duration = data['min_duration']
+        except KeyError as error:
+            raise serializers.ValidationError(f"Отсутствует поле {error}")
+        new_service = Service.objects.create(
+            author=request.user,
+            name_service=name_service,
+            #                image_service=image_service,
+            cost_service=cost_service,
+            description_service=description_service,
+            order_delivery_time=order_delivery_time,
+            min_duration=min_duration,
+        )
+        new_service.save()
+        try:
+            for tag_s in data['tag']:
+                try:
+                    tag_obj = Tag.objects.get(name=tag_s['name'])
+                except Tag.DoesNotExist:
+                    raise serializers.ValidationError(
+                        f"Выберети таг из списка {tags.tags}"
+                    )
+                new_service.tag.add(tag_obj)
+        except KeyError as error:
+            raise serializers.ValidationError(f"Отсутствует поле {error}")
+        serialazer = ServiceSerializer(new_service)
+        return Response(status=status.HTTP_201_CREATED, data=serialazer.data)
 
 
 class GeneralCatalogExecutorCardViewSet(viewsets.ModelViewSet):
