@@ -27,7 +27,7 @@ schema_view = get_schema_view(
         contact=openapi.Contact(email="german220515@yandex.ru"),
         license=openapi.License(name="BSD License"),
     ),
-    url='https://photo-market.acceleratorpracticum.ru/api/',
+    url='https://photomarket.sytes.net/api/',
     public=True,
     permission_classes=(permissions.AllowAny,),
 )
