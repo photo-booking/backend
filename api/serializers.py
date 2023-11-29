@@ -357,14 +357,21 @@ class GeneralCatalogSorting(serializers.Serializer):
 
 class ChatSerializer(serializers.ModelSerializer):
     current_users = serializers.StringRelatedField(read_only=True, many=True)
+    messages = serializers.SerializerMethodField()
 
     class Meta:
         model = Chat
         fields = (
+            'pk',
             'name',
             'host',
+            'messages',
             'current_users',
         )
+
+    def get_messages(self, id, *args, **kwargs):
+        messages = Message.objects.filter(chat=id)
+        return MessageSerializer(messages, many=True).data
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -392,6 +399,9 @@ class OrderSerializer(serializers.ModelSerializer):
 
 class MessageSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField(read_only=True)
+    created_at = serializers.DateTimeField(
+        format="%Y-%m-%d %H:%M", read_only=True
+    )
 
     class Meta:
         model = Message
