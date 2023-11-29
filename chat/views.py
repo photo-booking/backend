@@ -48,12 +48,9 @@ def index(request):
             elif Chat.objects.filter(
                 host=current_users, current_users=user.pk
             ).exists():
-                print(777)
                 room = Chat.objects.get(
                     host=current_users, current_users=user.pk
                 )
-                print(888)
-                print(print(room))
                 return redirect('chat:room', room.pk)
             else:
                 room = Chat.objects.create(

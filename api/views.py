@@ -297,6 +297,45 @@ class ChatViewSet(viewsets.ModelViewSet):
     queryset = Chat.objects.all()
     serializer_class = ChatSerializer
 
+    @action(
+        methods=[
+            'post',
+        ],
+        detail=False,
+    )
+    def check_chat(self, request, id=2):
+        print(request.META['HTTP_ID'])
+        id = request.META['HTTP_ID']
+        user = request.user
+        if request.method == 'POST':
+            current_users = User.objects.get(pk=id)
+            if Chat.objects.filter(
+                host=user.pk, current_users=current_users
+            ).exists():
+                room = Chat.objects.get(
+                    host=user.pk, current_users=current_users
+                )
+                serializer = ChatSerializer(room)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            elif Chat.objects.filter(
+                host=current_users, current_users=user.pk
+            ).exists():
+                room = Chat.objects.get(
+                    host=current_users, current_users=user.pk
+                )
+                serializer = ChatSerializer(room)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                room = Chat.objects.create(
+                    host=user, name=(current_users.pk, user.pk)
+                )
+                room.current_users.add(current_users)
+
+                serializer = ChatSerializer(room)
+                return Response(
+                    serializer.data, status=status.HTTP_201_CREATED
+                )
+
 
 class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
