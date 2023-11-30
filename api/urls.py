@@ -13,6 +13,7 @@ from .views import (
     RoomViewSet,
     ServiceViewSet,
     UserViewSet,
+    check_chat,
     count_user,
     get_token_from_vk_user,
     get_token_user_from_google,
@@ -39,4 +40,5 @@ urlpatterns = (
     path('auth/', include('djoser.urls.authtoken')),
     path('social_google/', get_token_user_from_google, name='google'),
     path('social_vk/', get_token_from_vk_user, name='vk'),
+    path('check_chat/', check_chat, name='check_chat'),
 )

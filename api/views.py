@@ -11,7 +11,7 @@ from rest_framework import serializers, status, viewsets
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.filters import SearchFilter
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from api.action_social import create_google_user, create_vk_user
@@ -297,45 +297,6 @@ class ChatViewSet(viewsets.ModelViewSet):
     queryset = Chat.objects.all()
     serializer_class = ChatSerializer
 
-    @action(
-        methods=[
-            'post',
-        ],
-        detail=False,
-    )
-    def check_chat(self, request, id=2):
-        print(request.META['HTTP_ID'])
-        id = request.META['HTTP_ID']
-        user = request.user
-        if request.method == 'POST':
-            current_users = User.objects.get(pk=id)
-            if Chat.objects.filter(
-                host=user.pk, current_users=current_users
-            ).exists():
-                room = Chat.objects.get(
-                    host=user.pk, current_users=current_users
-                )
-                serializer = ChatSerializer(room)
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            elif Chat.objects.filter(
-                host=current_users, current_users=user.pk
-            ).exists():
-                room = Chat.objects.get(
-                    host=current_users, current_users=user.pk
-                )
-                serializer = ChatSerializer(room)
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            else:
-                room = Chat.objects.create(
-                    host=user, name=(current_users.pk, user.pk)
-                )
-                room.current_users.add(current_users)
-
-                serializer = ChatSerializer(room)
-                return Response(
-                    serializer.data, status=status.HTTP_201_CREATED
-                )
-
 
 class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
@@ -400,3 +361,42 @@ def get_token_from_vk_user(request):
         return Response(
             status=status.HTTP_200_OK, data={'auth_token': {token_bd}}
         )
+
+
+@api_view(['POST', 'GET'])
+@permission_classes([IsAuthenticated])
+def check_chat(request, id=None):
+    if request.method == 'GET':
+        print(request.data)
+        id = request.data['id']
+        user = User.objects.get(pk=id)
+        chats = user.chats.all()
+        serializer = ChatSerializer(chats, many=True).data
+        #        serializer.is_valid(raise_exception=True)
+        print(111)
+        print(serializer)
+        return Response(serializer, status=status.HTTP_200_OK)
+    if request.method == 'POST':
+        id = request.data['id']
+        user = request.user
+        current_users = User.objects.get(pk=id)
+        if Chat.objects.filter(
+            host=user.pk, current_users=current_users
+        ).exists():
+            room = Chat.objects.get(host=user.pk, current_users=current_users)
+            serializer = ChatSerializer(room)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        elif Chat.objects.filter(
+            host=current_users, current_users=user.pk
+        ).exists():
+            room = Chat.objects.get(host=current_users, current_users=user.pk)
+            serializer = ChatSerializer(room)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            room = Chat.objects.create(
+                host=user, name=(current_users.pk, user.pk)
+            )
+            room.current_users.add(current_users)
+
+            serializer = ChatSerializer(room)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
