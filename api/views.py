@@ -367,14 +367,14 @@ def get_token_from_vk_user(request):
 @permission_classes([IsAuthenticated])
 def check_chat(request, id=None):
     if request.method == 'GET':
-        print(request.data)
         id = request.data['id']
         user = User.objects.get(pk=id)
-        chats = user.chats.all()
+        chats = Chat.objects.filter(host=user) | Chat.objects.filter(
+            current_users__in=[
+                user,
+            ]
+        )
         serializer = ChatSerializer(chats, many=True).data
-        #        serializer.is_valid(raise_exception=True)
-        print(111)
-        print(serializer)
         return Response(serializer, status=status.HTTP_200_OK)
     if request.method == 'POST':
         id = request.data['id']
