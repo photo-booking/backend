@@ -406,6 +406,7 @@ class MessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
         fields = (
+            'pk',
             'chat',
             'user',
             'text',
