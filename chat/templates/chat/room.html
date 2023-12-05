@@ -41,10 +41,22 @@
     );
     {% comment %} const url = 'ws://' + window.location.host +
     '/ws/chat/' + chatId + '/';                 {% endcomment %}
-    const chatSocket = new WebSocket(`wss://photomarket.sytes.net/ws/chat/$?token=${localStorage.getItem('Token')}`);
-    //const chatSocket = new WebSocket(`ws://127.0.0.1:8000/ws/chat/${chatId}/?token=${localStorage.getItem('Token')}`);
+    //const chatSocket = new WebSocket(`wss://photomarket.sytes.net/ws/chat/$?token=${localStorage.getItem('Token')}`);
+    const chatSocket = new WebSocket(`ws://127.0.0.1:8000/ws/chat/${chatId}/?token=194ba3a836fc8d7e449ca7bc76213fbe1c5552d7`);
     //const chatSocket = new WebSocket(url);
     console.log(chatSocket)
+    chatSocket.onopen = function (x) {
+        console.log('Hihi', x)
+        console.log('User_name', userId)
+        console.log('User_last_name', userLst)
+        console.log('roompk', room_pk)};
+    //    chatSocket.send(
+    //        JSON.stringify({
+    //            pk: room_pk,
+    //            action: "receive_messages",
+    //            request_id: request_id,
+    //        })
+    //    );};
     chatSocket.onmessage = function(event) {
         console.log('User_name', userId)
         const data = JSON.parse(event.data);
@@ -52,16 +64,19 @@
         const message = document.getElementById('chat-messages');
 
         const dateOptions = {hour: 'numeric', minute: 'numeric', hour12: true};
-        const datetime = new Date(data.datetime).toLocaleString('en', dateOptions);
+        const datetime = new Date(data.created_at).toLocaleString('en', dateOptions);
         const isMe = data.user === userId;
         const source = isMe ? 'me' : 'other';
         const name = isMe ? 'Me' : data.user;
+        console.log('data', data)
+        console.log('event', event)
+
 
 
         chat.innerHTML += '<div class="message ' + source + '">' +
                         '<strong>' + name + '</strong> ' +
                         '<span class="date">' + datetime + '</span><br>' +
-                        data.message + '</div>';
+                        data.text + '</div>';
         chat.scrollTop = chat.scrollHeight;
     };
     chatSocket.onclose = function(event) {

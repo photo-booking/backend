@@ -32,7 +32,9 @@ def order_chat_room(request, order_id):
 
 def index(request):
     users = User.objects.all()
-    token = request.headers.get('Authorization').split(" ")[1]
+    print(111)
+    print(request.GET.urlencode().split("=")[1])
+    token = request.GET.urlencode().split("=")[1]
     user = get_object_or_404(Token, key=token).user
     if request.method == "POST":
         userpk = request.POST.get("user_pk", None)

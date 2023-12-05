@@ -6,6 +6,9 @@ from django.utils import timezone
 from djangochannelsrestframework.observer.generics import action
 
 from chat.models import Chat, Message
+from photo_booking import settings
+
+timezone.activate(settings.TIME_ZONE)
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -29,6 +32,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def get_chat(self, pk: int) -> Chat:
         return Chat.objects.get(pk=pk)
 
+    @database_sync_to_async
+    def get_message(self) -> Message:
+        return Message.objects.latest('created_at')
+
     # получить сообщение из WebSocket
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
@@ -38,13 +45,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await database_sync_to_async(Message.objects.create)(
             chat=chat, user=self.scope["user"], text=message
         )
+        messagepk: Message = await self.get_message()
         await self.channel_layer.group_send(
             self.room_group_name,
             {
+                'pk': messagepk.pk,
+                'chat': chat.pk,
                 'type': 'chat_message',
-                'message': message,
+                'text': message,
                 'user': self.user.first_name,
-                'datetime': now.isoformat(),
+                'created_at': now.astimezone().isoformat(
+                    timespec='minutes', sep=" "
+                ),
             },
         )
 

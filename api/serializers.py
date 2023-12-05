@@ -398,7 +398,9 @@ class OrderSerializer(serializers.ModelSerializer):
 
 
 class MessageSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField(read_only=True)
+    user = serializers.SlugRelatedField(
+        read_only=True, slug_field='first_name'
+    )
     created_at = serializers.DateTimeField(
         format="%Y-%m-%d %H:%M", read_only=True
     )
