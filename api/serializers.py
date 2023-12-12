@@ -407,13 +407,7 @@ class MessageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Message
-        fields = (
-            'pk',
-            'chat',
-            'user',
-            'text',
-            'created_at',
-        )
+        fields = ('pk', 'chat', 'user', 'text', 'created_at', 'received')
 
 
 class RaitingSerializer(serializers.ModelSerializer):
