@@ -18,7 +18,7 @@ class ChatAdmin(admin.ModelAdmin):
 
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
-    list_display = ('id', 'text', 'user', 'created_at')
+    list_display = ('id', 'text', 'user', 'received', 'created_at')
     search_fields = ('text', 'user')
     list_filter = (
         'text',

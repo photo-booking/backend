@@ -28,6 +28,9 @@ class Message(models.Model):
         User, on_delete=models.CASCADE, related_name="messages"
     )
     created_at = models.DateTimeField(auto_now_add=True)
+    received = models.BooleanField(
+        verbose_name="Статус прочитано", default=False
+    )
 
     def __str__(self):
         return f"Message({self.user} {self.chat})"
