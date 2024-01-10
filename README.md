@@ -1,4 +1,4 @@
-# Проект Просепт:
+# Проект photo-booking:
 [![MSPP CI/CD](https://github.com/photo-booking/backend/actions/workflows/trigger_to_main_repo.yml/badge.svg)](https://github.com/photo-booking/backend/actions/workflows/trigger_to_main_repo.yml/badge.svg)
 
 Цель проекта - 
@@ -110,7 +110,7 @@
 
 1. Клонируйте репозиторий с GitHub и в **.env**-файле введите данные для переменных окружения (значения даны для примера, но их можно оставить; подсказки даны в комментариях):
 ```bash
-git clone https://github.com/Prosept-marking/backend.git && \
+git clone https://github.comphoto-booking/backend.git && \
 cd backend && \
 cp .env_example .env && \
 nano .env
